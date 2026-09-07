@@ -4,9 +4,12 @@
 
 ## Submission candidate
 
-Candidate **0.3.0** is available on `main`, prepared through
-`release/ego-submission`. It has not been submitted to or approved by
-extensions.gnome.org. The GitHub repository is public.
+Version **0.3.0** was submitted to extensions.gnome.org. The owner's listing
+screenshot shows **Unreviewed** on 2026-09-07, under
+[ntfy for GNOME — extension 10898](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/).
+It has not been approved. The listing currently returns HTTP 404 to anonymous
+visitors, so the owner screenshot is the evidence for this submission status.
+Source is available on `main`, and the GitHub repository is public.
 
 Download the [candidate ZIP](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.0-rc.1/ntfy%40shukiv.github.io.shell-extension.zip)
 and [checksums](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.0-rc.1/SHA256SUMS)
@@ -21,12 +24,13 @@ documentation; the upload form is on extensions.gnome.org.
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
+| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — awaiting review |
 | UUID | `ntfy@shukiv.github.io` |
 | User-facing version | `0.3.0` in `version-name` |
 | Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
 | Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` |
-| Shell targets | 46–50 in the candidate; select verified versions before uploading |
+| Shell targets | 46–50 declared in the submission; desktop validation remains pending |
 
 The namespace follows the maintainer's GitHub account. GNOME treats the change
 from `ntfy@ntfy.gnome` as a new extension: follow the
@@ -37,7 +41,7 @@ The numeric `version` field is assigned by extensions.gnome.org. Keep it out of
 source metadata and use `version-name` for the visible project release. See
 [GNOME's metadata reference](https://gjs.guide/extensions/overview/anatomy.html#metadata-json-required).
 
-## Before upload
+## Validation for this submission and future updates
 
 The owner selected GNU GPL version 3. The applied terms are in
 [LICENSE](../LICENSE), with the full license text in [COPYING](../COPYING).
@@ -45,7 +49,7 @@ The owner also approved public repository access; both steps are complete.
 
 1. Record the desktop's `gnome-shell --version` and session type. Install this
    exact candidate and complete the [desktop acceptance checks](TESTING.md).
-   Retain only versions actually verified in `shell-version` for the submission.
+   Record verified versions and adjust `shell-version` in an update if needed.
 2. Review the implementation and the [architecture](BLUEPRINT.md). The maintainer
    must be able to explain the submitted code; GNOME permits AI assistance as
    a development tool but expects the maintainer to understand and justify it.
@@ -93,8 +97,26 @@ screenshot with the hidden message submenu or expose private message contents.
 5. Monitor the review and respond to each requested change. Uploading starts
    the review process; it does not mean the extension has been approved.
 
-The current environment has no authenticated extensions.gnome.org session.
-The account owner needs to perform the login and upload in their browser.
+The owner completed the initial upload in their browser. This development
+environment still has no authenticated extensions.gnome.org session; subsequent
+uploads and account-only review actions need the owner's browser.
+
+## Awaiting review
+
+The next step is to monitor the **Unreviewed** link on the listing and the
+account's review email. Add a screenshot of the actual extension with harmless
+message content. Respond to any reviewer requests before uploading a replacement.
+
+The site's **Incompatible** label appears when its compatibility selector cannot
+find an installable version for the detected Shell. An unreviewed first release
+has no approved build available, so the label alone does not establish a runtime
+incompatibility. The desktop's actual GNOME version is still needed to distinguish
+that case from a version outside the declared 46–50 range. See the
+[website's compatibility logic](https://extensions.gnome.org/static/js/extensions.aff5cff579c3.js)
+and [GNOME's review-before-download explanation](https://extensions.gnome.org/about/).
+
+Do not upload the same archive again solely to clear that label. Approval status
+and actual desktop compatibility need to be checked separately.
 
 ## Review notes
 

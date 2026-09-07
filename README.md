@@ -4,8 +4,9 @@ A GNOME Shell extension that receives [ntfy](https://ntfy.sh) messages and
 shows native desktop notifications, with a panel menu for subscriptions and
 recent messages. Works with ntfy.sh and self-hosted servers.
 
-This is an initial implementation for **GNOME 46–50**, pending testing in a
-real GNOME Shell session. It is not yet a published or release-tested extension.
+Version **0.3.0** has been [submitted to GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
+and is awaiting review. The submission targets **GNOME 46–50**; the full desktop
+compatibility matrix remains unverified. It is not yet an approved release.
 
 ## Documentation
 
