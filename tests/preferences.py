@@ -32,4 +32,4 @@ export const gettext = text => text;
     subprocess.run(['glib-compile-schemas', '--strict', str(stage / 'schemas')], check=True)
     subprocess.run([gjs, '-m', str(root / 'tests/preferences.js'), str(resource), str(stage / 'schemas')],
                    env={**os.environ, 'GSETTINGS_BACKEND': 'memory'}, check=True, timeout=20)
-print('Native preferences passed: construction, add, duplicate validation, toggle, remove, invalid settings, close.')
+print('Native preferences passed: subscription controls, token navigation, keyring save/replace/remove, masked entry, validation, close.')

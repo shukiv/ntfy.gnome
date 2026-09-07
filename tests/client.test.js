@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {SubscriptionClient} from '../lib/client.js';
+import {CredentialError} from '../lib/auth.js';
 
 const subscription = {id: 'a', server: 'https://ntfy.sh', topic: 'alerts', enabled: true};
 const flush = async () => {
@@ -189,4 +190,35 @@ test('simultaneous clients keep independent duplicate caches', async () => {
     assert.equal(second.messages.length, 1);
     first.client.stop();
     second.client.stop();
+});
+
+test('credential errors stop retries and present an actionable credential state', async () => {
+    for (const code of ['keyring-locked', 'token-missing', 'keyring-unavailable']) {
+        const pending = deferred();
+        const h = harness([{response: pending.promise}]);
+        h.client.start();
+        pending.reject(new CredentialError(code));
+        await flush();
+        assert.deepEqual(h.statuses.at(-1), {state: 'credentials', code});
+        assert.equal(h.timers.size, 0);
+        h.client.stop();
+    }
+});
+
+test('replacing the authenticated transport retains the replay checkpoint and deduplication', async () => {
+    const h = harness([{chunks: [chunk(event('one', 250))]}]);
+    h.advanceTime(100_000);
+    h.client.start();
+    await flush();
+    let opened;
+    const chunks = [chunk(event('one', 250), event('two', 251))];
+    h.client.setTransport({open(url) {
+        opened = url;
+        return {response: Promise.resolve({status: 200,
+            read: async () => chunks.shift() ?? null, close: async () => {}}), cancel() {}};
+    }});
+    await flush();
+    assert.match(opened, /since=249$/);
+    assert.deepEqual(h.messages.map(message => message.id), ['one', 'two']);
+    h.client.stop();
 });

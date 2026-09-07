@@ -12,11 +12,15 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {parseSubscriptions, safeWebUrl} from './lib/config.js';
 import {SubscriptionClient} from './lib/client.js';
 import {schedule, SoupTransport} from './lib/transport.js';
+import {AuthenticatedTransport, parseCredentials} from './lib/auth.js';
+import {SecretStore} from './lib/secrets.js';
+import {credentialStatus} from './lib/credentialMessages.js';
 
 export default class NtfyExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
         this._transport = new SoupTransport();
+        this._secrets = new SecretStore();
         this._clients = new Map();
         this._statusRows = new Map();
         this._history = [];
@@ -61,6 +65,14 @@ export default class NtfyExtension extends Extension {
         this._settingsSignals = [
             this._settings.connect('changed::subscriptions', () => this._syncSubscriptions()),
             this._settings.connect('changed::notifications-enabled', () => this._syncMute()),
+            this._settings.connect('changed::server-credentials', () => this._syncSubscriptions()),
+            this._settings.connect('changed::credential-retry', () => {
+                const [server] = this._settings.get_value('credential-retry').deep_unpack();
+                for (const client of this._clients.values()) {
+                    if (client.subscription.server === server)
+                        client.reconnect();
+                }
+            }),
         ];
         this._syncMute();
         this._syncSubscriptions();
@@ -77,8 +89,10 @@ export default class NtfyExtension extends Extension {
 
     _syncSubscriptions() {
         let subscriptions;
+        let credentials;
         try {
             subscriptions = parseSubscriptions(this._settings.get_string('subscriptions'));
+            credentials = parseCredentials(this._settings.get_value('server-credentials').deep_unpack());
         } catch {
             for (const client of this._clients.values())
                 client.stop();
@@ -86,7 +100,7 @@ export default class NtfyExtension extends Extension {
             this._statusRows.clear();
             this._subscriptionsSection.removeAll();
             this._subscriptionsSection.addMenuItem(new PopupMenu.PopupMenuItem(
-                _('Invalid subscriptions — check Preferences'), {reactive: false}));
+                _('Invalid subscriptions or token settings — check Preferences'), {reactive: false}));
             return;
         }
 
@@ -117,15 +131,26 @@ export default class NtfyExtension extends Extension {
             this._statusRows.set(subscription.id, {item, statusItem, topic: subscription.topic});
             this._setStatus(subscription.id, subscription.enabled
                 ? previous.get(subscription.id) ?? {state: 'connecting'} : {state: 'disabled'});
-            if (!subscription.enabled || this._clients.has(subscription.id))
+            if (!subscription.enabled)
                 continue;
+            const credentialId = credentials[subscription.server] ?? null;
+            const transport = new AuthenticatedTransport(this._transport, this._secrets, subscription.server, credentialId);
+            const existing = this._clients.get(subscription.id);
+            if (existing) {
+                if (existing.credentialId !== credentialId) {
+                    existing.credentialId = credentialId;
+                    existing.setTransport(transport);
+                }
+                continue;
+            }
             const client = new SubscriptionClient(subscription, {
-                transport: this._transport,
+                transport,
                 schedule,
                 cancelScheduled: id => GLib.Source.remove(id),
                 onMessage: message => this._receive(subscription, message),
                 onStatus: status => this._setStatus(subscription.id, status),
             });
+            client.credentialId = credentialId;
             this._clients.set(subscription.id, client);
             client.start();
         }
@@ -145,7 +170,12 @@ export default class NtfyExtension extends Extension {
             text = `${_('Reconnecting')} (${status.seconds}s)`;
             break;
         case 'error':
-            text = `${status.reason} — ${_('check server or topic, then Reconnect')}`;
+            text = ['HTTP 401', 'HTTP 403'].includes(status.reason)
+                ? `${status.reason} — ${_('check Access tokens and topic permissions')}`
+                : `${status.reason} — ${_('check server or topic, then Reconnect')}`;
+            break;
+        case 'credentials':
+            text = credentialStatus(status.code, _);
             break;
         case 'disabled':
             text = _('Disabled');
@@ -236,6 +266,7 @@ export default class NtfyExtension extends Extension {
         this._clients = null;
         this._transport?.destroy();
         this._transport = null;
+        this._secrets = null;
         for (const id of this._settingsSignals ?? [])
             this._settings.disconnect(id);
         this._settingsSignals = null;

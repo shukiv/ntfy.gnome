@@ -9,14 +9,15 @@ real GNOME Shell session. It is not yet a published or release-tested extension.
 
 ## Included
 
-- Multiple public topics on ntfy.sh and self-hosted HTTP(S) server origins.
+- Multiple public and private topics on ntfy.sh and self-hosted servers.
+- Access tokens stored in the desktop keyring, shared by server.
 - Native preferences to add, remove, undo removal, or disable subscriptions.
 - Panel menu with connection status, reconnect, and the last 20 messages.
 - Desktop notifications and a mute switch that keeps receiving messages.
 - Reconnection with backoff, in-memory replay checkpoints, and deduplication.
 
-Private-topic authentication, persistent history, attachments, publishing,
-and message update/delete events are planned separately. History and replay
+Persistent history, attachments, publishing, and message update/delete events
+are planned separately. History and replay
 checkpoints reset when the extension is disabled, including screen locking.
 Messages sent while disabled aren't recovered on the next enable, apart from
 the one second of overlap used when starting a subscription.
@@ -24,7 +25,8 @@ the one second of overlap used when starting a subscription.
 ## Build and install
 
 On the GNOME desktop, runtime requirements are GJS, Soup 3, GTK 4, and
-libadwaita, normally supplied by the desktop distribution. Building requires
+libadwaita, and libsecret with a Secret Service provider such as GNOME Keyring,
+normally supplied by the desktop distribution. Building requires
 Python 3 and `glib-compile-schemas`. Node.js 20+ is used only for development checks.
 No npm packages are required.
 
@@ -38,9 +40,12 @@ python3 scripts/pack.py
 gnome-extensions install --force dist/ntfy@ntfy.gnome.shell-extension.zip
 ```
 
-**Log out of GNOME and back in after the first installation**, so Shell discovers
-the extension. Running `enable` before that can report that the extension
-“does not exist,” even though the ZIP was installed successfully. Then:
+Refresh Shell after the first installation so it discovers the extension.
+On **X11**, press **Alt+F2**, enter **`restart`**, and press Enter. On **Wayland**,
+log out of GNOME and back in, or use a nested Shell for development. Check your
+session type with `echo "$XDG_SESSION_TYPE"`. Running `enable` before discovery
+can report that the extension “does not exist” despite a successful install.
+Then:
 
 ```sh
 gnome-extensions enable ntfy@ntfy.gnome
@@ -56,8 +61,33 @@ python3 scripts/pack.py
 gnome-extensions install --force dist/ntfy@ntfy.gnome.shell-extension.zip
 ```
 
-Log out and back in again to load the updated JavaScript. Run these commands
-as your desktop user, without `sudo`.
+Refresh Shell using the method for your session type to load the updated
+JavaScript. Run these commands as your desktop user, without `sudo`.
+
+## Access tokens
+
+Open **Preferences → Access tokens**, or click the key button beside an existing
+subscription. Enter the server origin (for example, `https://notify.example.org`)
+and paste the raw access token, such as `tk_…`, then select **Save token**.
+Do not include `Bearer`, a topic path, or a documentation URL.
+
+The saved token applies to all subscriptions on that exact server origin.
+Saving or replacing it reconnects those subscriptions automatically, preserving
+their in-memory replay checkpoints. The password field clears after submission
+and never displays a previously saved token.
+
+**Saved tokens** provides **Replace**, **Unlock**, and **Remove token** controls.
+Removing a token deletes its keyring entry and switches that server to anonymous
+access; it does not revoke the token on the ntfy server. If the keyring is locked,
+choose **Unlock** to unlock it and retry affected subscriptions. Missing or
+unavailable credentials stop the connection until repaired; they do not cause an
+anonymous retry. HTTP 401/403 means the token or topic permissions need attention.
+
+Tokens require HTTPS, except on localhost/loopback for development. They are sent
+only in the Authorization header, never in URLs or GSettings. Redirects are not
+followed. GSettings stores only a server origin and an opaque keyring item ID.
+Create or revoke tokens in your ntfy server's account settings; see the
+[ntfy access-token documentation](https://docs.ntfy.sh/publish/#access-tokens).
 
 In preferences, enter `https://ntfy.sh` and a hard-to-guess topic name. Public
 topics can be read and written by anyone who knows the name. For your own
@@ -83,13 +113,16 @@ npm test                  # Protocol, configuration, reconnect and teardown
 npm run check             # Also syntax, metadata and strict schema validation
 npm run test:integration  # Real GJS/Soup against a temporary loopback server
 npm run test:preferences  # Native GTK controls; requires a display or Xvfb
+npm run test:keyring      # Real Secret Service storage, cancellation and locking
 npm run pack              # Creates an installable ZIP in dist/
 ```
 
 Set `GJS=/path/to/gjs` to use a non-system runtime for the integration test.
-For headless preferences testing, use
-`dbus-run-session -- xvfb-run -a npm run test:preferences`. That harness replaces
-only the Shell preferences host; it uses real GTK, libadwaita, and GSettings.
+For headless preferences testing, use `xvfb-run -a npm run test:preferences`.
+The integration, preferences, and keyring scripts start a private D-Bus session
+and a disposable GNOME Keyring, requiring `gnome-keyring-daemon` and `gdbus`.
+They never use the user's existing keyring. The preferences harness replaces
+only the Shell preferences host; GTK, libadwaita, GSettings, and libsecret are real.
 Packaging includes only the runtime modules, metadata, stylesheet, and schemas.
 
 Shell caches imported JavaScript. Use a fresh nested Shell session or log out

@@ -38,9 +38,10 @@ desktop version and runtime verification. GNOME 45 and older need a separate
 compatibility decision. `ntfy@ntfy.gnome` is a provisional local UUID; settle
 the public identity before distribution.
 
-Initial status: slice 1 is implemented and packaged. Protocol/lifecycle tests,
-the real GJS networking fixture, and a native preferences harness pass; actual
-Shell integration and the declared desktop version matrix remain unverified.
+Initial status: slices 1 and 2 are implemented. Protocol/lifecycle tests, the
+real GJS networking fixture, native preferences, and disposable GNOME Keyring
+tests pass; actual Shell integration and the declared desktop version matrix
+remain unverified.
 
 ## Architecture
 
@@ -63,6 +64,10 @@ flowchart LR
 | `lib/protocol.js` | Bounded JSON framing, message normalization, deduplication |
 | `lib/client.js` | Transport-independent reconnect and cancellation lifecycle |
 | `lib/transport.js` | Soup 3 / Gio asynchronous HTTP operations |
+| `lib/auth.js` | Cancel-safe authentication before opening a stream |
+| `lib/secrets.js` | Asynchronous libsecret storage and noninteractive background lookup |
+| `lib/tokenSettings.js` | Publish keyring references after successful storage |
+| `lib/tokenPreferences.js` | Masked token editor, replacement, removal and explicit unlock |
 | `schemas/` | Persistent configuration, without message contents or secrets |
 
 Use plain JavaScript ES modules. No transpiler or runtime npm dependencies.
@@ -77,6 +82,17 @@ must be unique. Limit configuration to 20 subscriptions to bound resources.
 The initial UI accepts HTTP(S) origins, including ports; reverse-proxy subpaths
 are outside the first slice. HTTP is available for explicitly configured LAN
 servers. HTTPS is the default and certificate validation stays enabled.
+
+Authenticated servers require HTTPS, with an exception for loopback development.
+The `server-credentials` GSettings dictionary maps a canonical origin to an opaque
+keyring item ID. The secret itself is stored in Secret Service with origin and
+ID attributes. Replacement stores a new item before switching the reference,
+then removes the old item. Failure to update settings rolls back the new item.
+Each connection reads its token from the keyring; there is no persistent token
+cache. Failed or locked lookups stop the connection without anonymous fallback
+or a background unlock prompt. Explicit Unlock in preferences triggers a retry
+for that server through a nonsecret `credential-retry` origin/nonce setting.
+Removing a subscription retains its shared server token until explicitly removed.
 
 Each enabled topic owns one asynchronous connection. This keeps replay
 positions, failures, and future permissions independent. Connection sharing
@@ -128,6 +144,8 @@ light/dark themes. Run on each declared Shell version before claiming support.
 - [Extension review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html): lifecycle cleanup.
 - [GNOME notification design](https://developer.gnome.org/hig/patterns/feedback/notifications.html): native interaction.
 - [Soup asynchronous requests](https://libsoup.gnome.org/libsoup-3.0/method.Session.send_async.html).
+- [ntfy token authentication](https://docs.ntfy.sh/publish/#access-tokens).
+- [libsecret search and unlock flags](https://gnome.pages.gitlab.gnome.org/libsecret/method.Service.search.html).
 - [GNOME 50 migration](https://gjs.guide/extensions/upgrading/gnome-shell-50.html).
 - Shell notification implementations inspected at upstream tags
   [46.0](https://github.com/GNOME/gnome-shell/blob/46.0/js/ui/messageTray.js) and

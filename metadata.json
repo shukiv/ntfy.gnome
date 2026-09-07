@@ -2,9 +2,9 @@
   "uuid": "ntfy@ntfy.gnome",
   "name": "ntfy for GNOME",
   "url": "https://github.com/shukiv/ntfy.gnome",
-  "description": "Receive ntfy topic messages in GNOME, with native notifications and subscription controls. Initial public-topic implementation.",
+  "description": "Receive public and private ntfy topic messages in GNOME, with native notifications, subscription controls, and access tokens stored in the desktop keyring.",
   "shell-version": ["46", "47", "48", "49", "50"],
   "settings-schema": "org.gnome.shell.extensions.ntfy",
   "gettext-domain": "ntfy-gnome",
-  "version": 1
+  "version": 2
 }

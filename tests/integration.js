@@ -1,9 +1,13 @@
 import GLib from 'gi://GLib';
 import {SubscriptionClient} from '../lib/client.js';
 import {SoupTransport, schedule} from '../lib/transport.js';
+import {AuthenticatedTransport} from '../lib/auth.js';
+import {SecretStore} from '../lib/secrets.js';
 
 const server = ARGV[0];
 const transport = new SoupTransport();
+if (GLib.getenv('NTFY_KEYRING_TEST') !== '1')
+    throw new Error('Run via tests/with_keyring.py to use a disposable keyring.');
 const statuses = [];
 const messages = [];
 const wait = seconds => new Promise(resolve => schedule(seconds, resolve));
@@ -42,6 +46,21 @@ try {
     const response = await redirected.response;
     assert(response.status === 302, 'Transport followed a redirect');
     await response.close();
+
+    const secrets = new SecretStore();
+    const credentialId = GLib.uuid_string_random();
+    await secrets.store(server, credentialId, 'tk_private_fixture').promise;
+    const authenticated = new AuthenticatedTransport(transport, secrets, server, credentialId);
+    const privateResponse = await authenticated.open(`${server}/private/json`).response;
+    assert(privateResponse.status === 200, 'Stored bearer token did not authenticate');
+    await privateResponse.close();
+    const anonymousResponse = await transport.open(`${server}/private/json`).response;
+    assert(anonymousResponse.status === 401, 'Private fixture accepted an anonymous request');
+    await anonymousResponse.close();
+    const authRedirect = await authenticated.open(`${server}/redirect/json`).response;
+    assert(authRedirect.status === 302, 'Authenticated request followed a redirect');
+    await authRedirect.close();
+    await secrets.remove(server, credentialId).promise;
 } finally {
     client.stop();
     denied.stop();

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.ntfy" path="/org/gnome/shell/extensions/ntfy/">
+    <key name="server-credentials" type="a{ss}">
+      <default>{}</default>
+      <summary>Server access token references</summary>
+      <description>Maps server origins to opaque keyring item IDs. Contains no access tokens.</description>
+    </key>
+    <key name="credential-retry" type="(ss)">
+      <default>('', '')</default>
+      <summary>Retry a server after unlocking its keyring</summary>
+      <description>Server origin and a unique request ID, without credentials.</description>
+    </key>
     <key name="subscriptions" type="s">
       <default>'[]'</default>
       <summary>Topic subscriptions</summary>

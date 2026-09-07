@@ -26,6 +26,12 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         route = urlsplit(self.path)
         requests.append(self.path)
+        if route.path == '/private/json':
+            authenticated = self.headers.get('Authorization') == 'Bearer tk_private_fixture'
+            self.send_response(200 if authenticated else 401)
+            self.send_header('Content-Length', '0')
+            self.end_headers()
+            return
         if route.path == '/denied/json':
             self.send_response(403)
             self.send_header('Content-Length', '0')
@@ -40,6 +46,7 @@ class Handler(BaseHTTPRequestHandler):
         if route.path != '/alerts/json':
             self.send_error(404)
             return
+        assert self.headers.get('Authorization') is None
         assert 'since' in parse_qs(route.query)
         attempt = sum(urlsplit(path).path == '/alerts/json' for path in requests)
         now = int(time.time())
@@ -77,7 +84,8 @@ try:
                     f'http://127.0.0.1:{server.server_port}'], cwd=root, check=True, timeout=20)
     assert not any(urlsplit(path).path == '/redirect-target' for path in requests)
     assert sum(urlsplit(path).path == '/alerts/json' for path in requests) == 2
-    print('Real GJS/Soup integration passed: UTF-8, replay, deduplication, HTTP errors, redirect refusal, cancellation.')
+    assert not any('tk_private_fixture' in path for path in requests)
+    print('Real GJS/Soup integration passed: streaming, replay, cancellation, keyring-backed bearer auth, anonymous isolation, redirect refusal.')
 finally:
     server.shutdown()
     server.server_close()

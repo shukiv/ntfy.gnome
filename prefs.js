@@ -5,6 +5,7 @@ import Gtk from 'gi://Gtk';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 import {MAX_SUBSCRIPTIONS, normalizeSubscription, parseSubscriptions} from './lib/config.js';
+import {TokenPreferences} from './lib/tokenPreferences.js';
 
 export default class NtfyPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
@@ -15,6 +16,7 @@ export default class NtfyPreferences extends ExtensionPreferences {
             icon_name: 'preferences-system-notifications-symbolic',
         });
         window.add(page);
+        const tokens = new TokenPreferences(window, settings, _);
 
         const notifications = new Adw.PreferencesGroup({title: _('Notifications')});
         const showNotifications = new Adw.SwitchRow({
@@ -37,7 +39,7 @@ export default class NtfyPreferences extends ExtensionPreferences {
 
         const addGroup = new Adw.PreferencesGroup({
             title: _('Add a subscription'),
-            description: _('Public topics on ntfy.sh or your own server. Anyone with access to a public topic can read or publish messages; choose a hard-to-guess name.'),
+            description: _('Topics on ntfy.sh or your own server. For private topics, save a token on the Access tokens page. Choose a hard-to-guess name for public topics.'),
         });
         const server = new Adw.EntryRow({title: _('Server URL'), text: 'https://ntfy.sh'});
         const topic = new Adw.EntryRow({title: _('Topic')});
@@ -89,6 +91,11 @@ export default class NtfyPreferences extends ExtensionPreferences {
                     tooltip_text: `${_('Receive messages from')} ${subscription.topic}`,
                 });
                 row.activatable_widget = enabled;
+                const accessToken = new Gtk.Button({
+                    icon_name: 'dialog-password-symbolic', css_classes: ['flat'],
+                    valign: Gtk.Align.CENTER, tooltip_text: _('Set server access token'),
+                });
+                accessToken.connect('clicked', () => tokens.selectServer(subscription.server));
                 enabled.connect('notify::active', () => {
                     try {
                         save(read().map(item => item.id === subscription.id ? {...item, enabled: enabled.active} : item));
@@ -119,6 +126,7 @@ export default class NtfyPreferences extends ExtensionPreferences {
                     }
                 });
                 row.add_suffix(enabled);
+                row.add_suffix(accessToken);
                 row.add_suffix(remove);
                 subscriptionsGroup.add(row);
                 rows.push(row);
@@ -150,6 +158,7 @@ export default class NtfyPreferences extends ExtensionPreferences {
         const changedId = settings.connect('changed::subscriptions', render);
         window.connect('close-request', () => {
             settings.disconnect(changedId);
+            tokens.destroy();
             return false;
         });
         render();
