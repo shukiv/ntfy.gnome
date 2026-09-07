@@ -1,0 +1,5 @@
+/dist/
+/node_modules/
+/schemas/gschemas.compiled
+__pycache__/
+*.pyc

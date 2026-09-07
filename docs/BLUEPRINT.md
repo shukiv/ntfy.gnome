@@ -1,0 +1,134 @@
+# ntfy for GNOME
+
+## Investigation
+
+The project directory was empty on 2026-09-07: no source, Git repository,
+build tooling, or existing extension to migrate. This is a new implementation.
+The development container has Node.js, Python, and GLib schema tools, but no
+GNOME Shell session. Desktop behavior must be verified separately.
+
+## Product
+
+Receive ntfy messages directly in GNOME without keeping a browser open. The
+first useful journey is: enable extension → add server and topic → see a
+connected status → publish from another application → receive a notification.
+
+Use GNOME's panel menu, symbolic icons, notification tray, fonts, and theme.
+Preferences use GTK 4 and libadwaita. Connection states have text labels;
+errors appear beside the subscription or form that needs attention. No custom
+palette, bundled fonts, or web UI is necessary.
+
+## Delivery slices
+
+1. **Initial implementation:** public subscriptions on ntfy.sh or self-hosted
+   origins; add/remove/enable topics; native notifications; global mute;
+   connection status; reconnect; bounded recent messages; installable archive.
+2. **Private subscriptions:** per-server bearer tokens in Secret Service;
+   explicit locked-keyring and authorization states; credential replacement.
+   Tokens never belong in GSettings, query parameters, or logs.
+3. **Reliability and richer messages:** persistent replay checkpoints, sleep
+   and network recovery testing, per-topic priority/mute controls, message
+   update/delete semantics, and optional retained history.
+4. **Release:** real Shell version matrix, accessibility and theme checks,
+   translations, packaging metadata and license decision, extension review.
+
+The first slice is the scope of this initial implementation, not a completed
+public release. GNOME 46–50 is the provisional API target, pending the user's
+desktop version and runtime verification. GNOME 45 and older need a separate
+compatibility decision. `ntfy@ntfy.gnome` is a provisional local UUID; settle
+the public identity before distribution.
+
+Initial status: slice 1 is implemented and packaged. Protocol/lifecycle tests,
+the real GJS networking fixture, and a native preferences harness pass; actual
+Shell integration and the declared desktop version matrix remain unverified.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    P[GTK / Adwaita preferences] <--> S[GSettings: subscriptions and mute]
+    S --> E[Extension lifecycle]
+    E --> C[Subscription clients]
+    C <--> T[Async Soup 3 transport]
+    T <--> N[ntfy servers]
+    C --> M[Panel menu and recent messages]
+    C --> G[GNOME notification tray]
+```
+
+| Module | Responsibility |
+| --- | --- |
+| `extension.js` | Own settings, clients, panel, notification source, teardown |
+| `prefs.js` | Validated subscription management and notification settings |
+| `lib/config.js` | Subscription validation and canonical server identity |
+| `lib/protocol.js` | Bounded JSON framing, message normalization, deduplication |
+| `lib/client.js` | Transport-independent reconnect and cancellation lifecycle |
+| `lib/transport.js` | Soup 3 / Gio asynchronous HTTP operations |
+| `schemas/` | Persistent configuration, without message contents or secrets |
+
+Use plain JavaScript ES modules. No transpiler or runtime npm dependencies.
+Keep policy and protocol logic independent of GNOME so Node can test it; test
+the real GJS transport against a local fixture server as well.
+
+## Subscription contract
+
+Configuration is a JSON array in GSettings. Each record has a stable `id`,
+canonical `server` origin, `topic`, and `enabled` flag. A `(server, topic)` pair
+must be unique. Limit configuration to 20 subscriptions to bound resources.
+The initial UI accepts HTTP(S) origins, including ports; reverse-proxy subpaths
+are outside the first slice. HTTP is available for explicitly configured LAN
+servers. HTTPS is the default and certificate validation stays enabled.
+
+Each enabled topic owns one asynchronous connection. This keeps replay
+positions, failures, and future permissions independent. Connection sharing
+can be revisited if actual usage justifies it.
+
+Consume newline-delimited JSON from `/<topic>/json`. Ignore protocol control
+events and malformed messages. Retry interrupted streams using an in-memory
+timestamp checkpoint and bounded message-ID deduplication. Include the last
+second in replay so messages with equal timestamps aren't skipped. Start at
+the subscription's activation time with one second of overlap; don't load the
+entire historical cache.
+Recovery depends on server retention and is not an exactly-once guarantee.
+
+Transient failures use exponential backoff with jitter, capped at 60 seconds;
+honor bounded `Retry-After`. Permanent HTTP errors wait for manual retry or
+configuration changes. Bound input lines to 64 KiB and recent history to 20
+messages. Disabling the extension cancels requests and timers, disconnects
+signals, destroys notifications and UI, and drops in-memory state.
+
+## Notification behavior
+
+- Message title falls back to the topic; body is plain text.
+- Priorities 1–2 use low urgency; 3–5 use normal urgency. A publisher cannot
+  force a critical notification through the user's Do Not Disturb setting.
+- Mute suppresses new desktop notifications while reception and history continue.
+- Only an explicit user action opens a validated HTTP(S) link. Unknown action
+  types, HTTP actions, attachments, and publisher commands are not executed.
+- History lives in memory and is cleared on disable, lock, logout, or restart.
+  The extension runs only in the normal user session, not on the lock screen.
+- No default topic is subscribed and enabling the extension alone sends no request.
+
+## Acceptance checks
+
+Automated: validation, fragmented UTF-8 framing, malformed/oversized data,
+duplicate messages, independent checkpoints, reconnect backoff, HTTP failures,
+cancellation during connection/read/retry, schema compilation, archive contents,
+and a local Soup integration test.
+
+Desktop: preferences add/remove/toggle; publish a unique test message; mute;
+Do Not Disturb; reconnect after offline/suspend; disable/re-enable; lock/unlock;
+check for leaked timers and actors; keyboard navigation; long text and scaling;
+light/dark themes. Run on each declared Shell version before claiming support.
+
+## Sources
+
+- [ntfy subscription API](https://docs.ntfy.sh/subscribe/api/): transport and replay.
+- [GNOME notifications](https://gjs.guide/extensions/topics/notifications.html): tray API.
+- [GNOME preferences](https://gjs.guide/extensions/development/preferences.html): settings and process boundary.
+- [Extension review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html): lifecycle cleanup.
+- [GNOME notification design](https://developer.gnome.org/hig/patterns/feedback/notifications.html): native interaction.
+- [Soup asynchronous requests](https://libsoup.gnome.org/libsoup-3.0/method.Session.send_async.html).
+- [GNOME 50 migration](https://gjs.guide/extensions/upgrading/gnome-shell-50.html).
+- Shell notification implementations inspected at upstream tags
+  [46.0](https://github.com/GNOME/gnome-shell/blob/46.0/js/ui/messageTray.js) and
+  [50.0](https://github.com/GNOME/gnome-shell/blob/50.0/js/ui/messageTray.js).

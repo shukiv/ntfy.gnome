@@ -1,0 +1,14 @@
+{
+  "name": "ntfy-gnome",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "python3 scripts/check.py",
+    "pack": "python3 scripts/pack.py",
+    "test:integration": "python3 tests/integration.py",
+    "test:preferences": "python3 tests/preferences.py"
+  },
+  "engines": {"node": ">=20"}
+}
