@@ -2,7 +2,7 @@
   "uuid": "ntfy@shukiv.github.io",
   "name": "ntfy for GNOME",
   "url": "https://github.com/shukiv/ntfy.gnome",
-  "description": "Receive ntfy notifications in GNOME Shell from ntfy.sh or your own server.\n\nSubscribe to public and private topics, store access tokens in the desktop keyring, and read the last 20 received messages in the panel menu. Includes connection status, automatic reconnection, and a desktop notification switch.\n\nRequires libsecret and a desktop keyring for access tokens. Recent history is kept in memory and clears when the extension stops, including screen locking and logout.",
+  "description": "Receive ntfy notifications in GNOME Shell from ntfy.sh or your own server.\n\nSubscribe to public and private topics, store access tokens in the desktop keyring, and read the last 20 received messages in the panel menu. Includes a panel message-count badge, connection status, automatic reconnection, and a desktop notification switch.\n\nRequires libsecret and a desktop keyring for access tokens. Recent history is kept in memory and clears when the extension stops, including screen locking and logout.",
   "shell-version": [
     "46",
     "47",
@@ -12,5 +12,5 @@
   ],
   "settings-schema": "org.gnome.shell.extensions.ntfy",
   "gettext-domain": "ntfy-gnome",
-  "version-name": "0.3.0"
+  "version-name": "0.3.1"
 }

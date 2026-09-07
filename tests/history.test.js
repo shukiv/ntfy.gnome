@@ -59,6 +59,11 @@ function render(messages) {
     const extension = new Extension();
     const opened = [];
     extension._history = messages;
+    extension._badge = {text: '0', visible: false};
+    extension._indicator = {};
+    extension._icon = {};
+    extension._notificationToggle = {setToggleState(value) { this.state = value; }};
+    extension._settings = {get_boolean: () => false};
     extension._recentMenu = new Submenu('Recent messages');
     extension._recentMenu.menu.isOpen = true;
     extension._clearItem = {setSensitive(value) { this.sensitive = value; }};
@@ -104,6 +109,50 @@ test('clearing history removes old message rows and disables the clear action', 
     extension._renderHistory();
     assert.equal(extension._clearItem.sensitive, false);
     assert.equal(extension._recentMenu.label.text, 'Recent messages (0)');
+    assert.equal(extension._badge.visible, false);
+    assert.equal(extension._badge.text, '0');
     const items = visibleItems(extension._recentMenu.menu);
     assert.deepEqual(items.map(item => item.label.text), ['New messages will appear here']);
+});
+
+test('the panel badge counts received messages while desktop notifications are muted', () => {
+    const {extension} = render([]);
+    assert.equal(extension._badge.visible, false);
+    extension._receive({topic: message.topic, server: message.server}, message);
+    assert.equal(extension._badge.text, '1');
+    assert.equal(extension._badge.visible, true);
+    assert.equal(extension._recentMenu.label.text, 'Recent messages (1)');
+    assert.equal(extension._clearItem.sensitive, true);
+    assert.equal(extension._indicator.accessible_name, 'ntfy — notifications muted — Recent messages (1)');
+    extension._renderHistory();
+    assert.equal(extension._badge.text, '1', 'Reading the history must not reset the retained count');
+});
+
+test('the badge matches bounded history during bursts and resets when history is cleared', () => {
+    const {extension} = render([]);
+    for (let i = 0; i < 25; i++)
+        extension._receive({topic: message.topic, server: message.server}, {...message, id: `message-${i}`});
+    assert.equal(extension._history.length, 20);
+    assert.equal(extension._badge.text, '20');
+    assert.equal(extension._recentMenu.label.text, 'Recent messages (20)');
+    extension._history = [];
+    extension._renderHistory();
+    assert.equal(extension._badge.text, '0');
+    assert.equal(extension._badge.visible, false);
+    assert.equal(extension._indicator.accessible_name, 'ntfy — notifications muted');
+});
+
+test('changing the notification switch preserves the badge and updates its accessible description', () => {
+    const {extension} = render([message]);
+    extension._settings.get_boolean = () => true;
+    extension._syncMute();
+    assert.equal(extension._badge.text, '1');
+    assert.equal(extension._badge.visible, true);
+    assert.equal(extension._notificationToggle.state, true);
+    assert.equal(extension._indicator.accessible_name, 'ntfy — Recent messages (1)');
+    extension._settings.get_boolean = () => false;
+    extension._syncMute();
+    assert.equal(extension._badge.text, '1');
+    assert.equal(extension._notificationToggle.state, false);
+    assert.equal(extension._indicator.accessible_name, 'ntfy — notifications muted — Recent messages (1)');
 });

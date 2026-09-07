@@ -19,6 +19,9 @@ with tempfile.TemporaryDirectory(prefix='ntfy-gnome-pack-') as temporary:
         target = stage / path.relative_to(root)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(path, target)
+    (stage / 'icons').mkdir()
+    for filename in ['ntfy.svg', 'LICENSE-Apache-2.0', 'NOTICE']:
+        shutil.copy2(root / 'icons' / filename, stage / 'icons' / filename)
     (stage / 'schemas').mkdir()
     for schema in (root / 'schemas').glob('*.gschema.xml'):
         shutil.copy2(schema, stage / 'schemas' / schema.name)
@@ -35,4 +38,6 @@ with zipfile.ZipFile(output) as archive:
     assert f"schemas/{metadata['settings-schema']}.gschema.xml" in archive.namelist()
     assert 'extension.js' in archive.namelist()
     assert 'LICENSE' in archive.namelist() and 'COPYING' in archive.namelist()
+    assert all(f'icons/{name}' in archive.namelist()
+               for name in ['ntfy.svg', 'LICENSE-Apache-2.0', 'NOTICE'])
 print(output)

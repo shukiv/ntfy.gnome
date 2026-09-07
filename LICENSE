@@ -16,3 +16,6 @@ along with this program, in COPYING. If not, see
 <https://www.gnu.org/licenses/>.
 
 SPDX-License-Identifier: GPL-3.0-only
+
+The bundled third-party ntfy artwork retains its Apache-2.0 license.
+See icons/NOTICE and icons/LICENSE-Apache-2.0 for attribution and terms.

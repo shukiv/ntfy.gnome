@@ -9,6 +9,8 @@
 - `node --test tests/history.test.js`: execute the real history renderer with
   menu/clock doubles; verify directly visible multiline bodies, title fallback,
   message order, timestamps, explicit browser actions, and clearing history.
+  Also verifies badge visibility, muted reception, the 20-message cap, retaining
+  the count when reading, and accessible count/mute text.
   This checks menu composition, not native St layout or scrolling.
 - `npm run test:integration`: real GJS and Soup 3, using a loopback fixture for
   UTF-8 streaming, duplicate delivery, reconnect, HTTP 403, redirect refusal,
@@ -49,6 +51,19 @@ The user's desktop screenshot confirms two connected subscriptions and a
 received history entry in the previous version. The updated menu still needs
 visual verification on that desktop.
 
+### Badge and icon verification (2026-09-08)
+
+The 0.3.1 badge/icon update passes all 43 Node tests, syntax and schema checks,
+archive construction/integrity, and Shexli with zero errors and the same two
+documented lifecycle warnings. A native GJS smoke check opens the bundled SVG
+through `Gio.FileIcon` and decodes it at 16, 32 and 48 pixels using GdkPixbuf.
+The listing PNG decodes as 512 × 512 with transparency. The new badge tests
+failed before implementation and passed afterward.
+
+The previous native network/preferences/keyring results above are from 0.3.0;
+those unchanged modules were not rerun for this panel update. Badge allocation,
+theme contrast and actual Shell icon rendering still need desktop validation.
+
 ## Reported desktop (2026-09-08)
 
 The owner ran `gnome-shell --version` on the test desktop and reported
@@ -66,6 +81,9 @@ preferences. The metadata's Shell versions are provisional targets.
 | Scenario | Expected result |
 | --- | --- |
 | Enable with empty settings | Panel appears; add-topic guidance; no network request |
+| ntfy panel artwork | Bundled logo loads without a network request; dims when muted |
+| Receive 1 / 10 / 25 messages | Badge shows 1 / 10 / 20, matching the retained history count |
+| Read history / toggle notification mute | Count is preserved; muted reception still increments it |
 | Add valid topic | Row appears immediately; status becomes Connected |
 | Invalid server/topic or duplicate | Error near form; existing subscriptions survive |
 | Remove / Undo | Stream stops; Undo restores subscription |
@@ -75,7 +93,7 @@ preferences. The metadata's Shell versions are provisional targets.
 | Title absent / Unicode / long text | Useful fallback; literal markup; multiline and unbroken text wrap |
 | 20 messages / one long message | History scrolls; last message, links and menu controls remain reachable |
 | Receive while reading history | Count updates without stealing focus; reopening shows new content |
-| Clear recent messages | History empties; clear action disabled; server messages unaffected |
+| Clear recent messages | History empties; badge hides; clear action disabled; server messages unaffected |
 | Priorities 1–2 / 3–5 | Low / normal urgency; never critical |
 | GNOME Do Not Disturb | No popup for incoming messages |
 | Extension notification mute | Messages still appear in recent history |
@@ -92,4 +110,5 @@ preferences. The metadata's Shell versions are provisional targets.
 | Rapid disable/enable cycles | One panel indicator and one client per enabled topic |
 | Open/close preferences repeatedly | No signal-handler warnings |
 | Keyboard, scaling, light/dark | Native focus behavior and readable controls |
+| Panel badge at normal/high DPI and light/dark styles | One- and two-digit counts remain readable and aligned; no clipped icon or badge |
 | GNOME 46 / 47 / 48 / 49 / 50 | Complete smoke pass before release support is claimed |

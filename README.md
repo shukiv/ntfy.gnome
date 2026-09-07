@@ -4,9 +4,13 @@ A GNOME Shell extension that receives [ntfy](https://ntfy.sh) messages and
 shows native desktop notifications, with a panel menu for subscriptions and
 recent messages. Works with ntfy.sh and self-hosted servers.
 
-Version **0.3.0** has been [submitted to GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
-and is awaiting review. The submission targets **GNOME 46–50**; the full desktop
-compatibility matrix remains unverified. It is not yet an approved release.
+Version **0.3.1** adds the ntfy panel logo and a message-count badge.
+Download the [GitHub test build](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1)
+or build from source below.
+
+Version **0.3.0** was [submitted to GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
+and was last reported as awaiting review. The extension targets **GNOME 46–50**;
+the full desktop compatibility matrix remains unverified. Approval has not been confirmed.
 
 ## Documentation
 
@@ -27,6 +31,7 @@ compatibility matrix remains unverified. It is not yet an approved release.
 - Native preferences to add, remove, undo removal, or disable subscriptions.
 - Panel menu with connection status, reconnect, and the last 20 messages,
   with message bodies directly visible in Recent messages.
+- ntfy panel logo with a badge counting retained messages; clearing history hides it.
 - Desktop notifications and a mute switch that keeps receiving messages.
 - Reconnection with backoff, in-memory replay checkpoints, and deduplication.
 
@@ -143,7 +148,7 @@ and a disposable GNOME Keyring, requiring `gnome-keyring-daemon` and `gdbus`.
 They never use the user's existing keyring. The preferences harness replaces
 only the Shell preferences host; GTK, libadwaita, GSettings, and libsecret are real.
 Packaging includes only runtime modules, metadata, stylesheet, schema XML,
-and license text. GNOME compiles the schema during installation.
+the panel SVG, and license notices. GNOME compiles the schema during installation.
 
 Shell caches imported JavaScript. Use **Alt+F2 → restart** on X11, log out and
 back in on Wayland, or start a fresh nested Shell to load changed code. See
@@ -161,5 +166,8 @@ repairing it with `gsettings` using the installed schema directory.
 
 The submission candidate uses UUID `ntfy@shukiv.github.io`. The project is
 licensed under GNU GPL version 3 (`GPL-3.0-only`); see [LICENSE](LICENSE) and
-[COPYING](COPYING). Desktop validation and the public listing are tracked in
+[COPYING](COPYING). The [ntfy artwork](https://dashboardicons.com/icons/ntfy) retains
+its Apache-2.0 license; see [attribution](icons/NOTICE). The listing's icon is
+uploaded separately; see [listing icon instructions](docs/RELEASING.md#listing-icon).
+Desktop validation and the public listing are tracked in
 the [publishing guide](docs/RELEASING.md).

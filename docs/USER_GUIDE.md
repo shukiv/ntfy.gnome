@@ -98,10 +98,12 @@ link. **Open topic** opens the topic's web page. Neither action opens a browser
 until you select it. Your browser may need its own ntfy login; the extension
 does not pass its keyring token to the browser.
 
-The count is the number of retained messages, not an unread badge. Reading a
-message does not change it. The extension keeps at most 20 messages across all
-subscriptions. **Clear recent messages** empties that local list without deleting
-messages from the ntfy server or clearing GNOME's notification list.
+The badge beside the ntfy logo in the top bar shows the same count as **Recent
+messages**: the number of retained messages across all subscriptions, up to 20.
+It appears after a message arrives and continues updating while desktop
+notifications are muted. Reading messages does not change the count.
+**Clear recent messages** empties the local list and hides the badge without
+deleting messages from the ntfy server or clearing GNOME's notification list.
 
 The list takes a fresh snapshot each time you expand **Recent messages**. If a
 message arrives while you are reading, the count updates; collapse and reopen
@@ -129,6 +131,8 @@ GNOME's **Do Not Disturb** setting is respected. ntfy priorities 1–2 use low
 notification urgency and go to the notification list without a banner.
 Priorities 3–5 use normal urgency; none bypass Do Not Disturb as critical alerts.
 The extension's mute switch does not remove notifications already delivered.
+The ntfy panel logo dims while muted; the badge remains readable and reception
+continues. The panel button's accessible name includes the mute state and count.
 
 For HTTP or keyring error states, use the [troubleshooting table](TROUBLESHOOTING.md#connection-and-token-errors).
 

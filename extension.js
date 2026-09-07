@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
@@ -28,11 +29,20 @@ export default class NtfyExtension extends Extension {
         this._history = [];
         this._source = null;
         this._indicator = new PanelMenu.Button(0.0, _('ntfy'));
+        const panelBox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
         this._icon = new St.Icon({
-            icon_name: 'preferences-system-notifications-symbolic',
+            gicon: new Gio.FileIcon({file: this.dir.resolve_relative_path('icons/ntfy.svg')}),
             style_class: 'system-status-icon',
         });
-        this._indicator.add_child(this._icon);
+        this._badge = new St.Label({
+            text: '0',
+            visible: false,
+            style_class: 'ntfy-message-count',
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        panelBox.add_child(this._icon);
+        panelBox.add_child(this._badge);
+        this._indicator.add_child(panelBox);
         Main.panel.addToStatusArea(this.uuid, this._indicator);
 
         const menu = this._indicator.menu;
@@ -84,9 +94,20 @@ export default class NtfyExtension extends Extension {
     _syncMute() {
         const enabled = this._settings.get_boolean('notifications-enabled');
         this._notificationToggle.setToggleState(enabled);
-        this._icon.icon_name = enabled
-            ? 'preferences-system-notifications-symbolic' : 'notifications-disabled-symbolic';
-        this._indicator.accessible_name = enabled ? _('ntfy') : _('ntfy — notifications muted');
+        this._icon.opacity = enabled ? 255 : 128;
+        this._syncMessageCount();
+    }
+
+    _syncMessageCount() {
+        const count = this._history.length;
+        this._badge.text = String(count);
+        this._badge.visible = count > 0;
+        const recent = `${_('Recent messages')} (${count})`;
+        this._recentMenu.label.text = recent;
+        this._clearItem.setSensitive(count > 0);
+        const name = this._settings.get_boolean('notifications-enabled')
+            ? _('ntfy') : _('ntfy — notifications muted');
+        this._indicator.accessible_name = count > 0 ? `${name} — ${recent}` : name;
     }
 
     _syncSubscriptions() {
@@ -194,8 +215,7 @@ export default class NtfyExtension extends Extension {
         this._history.length = Math.min(this._history.length, 20);
         // Refresh actors only when history is opened. A burst of notifications
         // should not rebuild the menu for every message or steal keyboard focus.
-        this._recentMenu.label.text = `${_('Recent messages')} (${this._history.length})`;
-        this._clearItem.setSensitive(true);
+        this._syncMessageCount();
         if (!this._settings.get_boolean('notifications-enabled'))
             return;
         if (!this._source) {
@@ -224,8 +244,7 @@ export default class NtfyExtension extends Extension {
 
     _renderHistory() {
         this._recentMenu.menu.removeAll();
-        this._clearItem.setSensitive(this._history.length > 0);
-        this._recentMenu.label.text = `${_('Recent messages')} (${this._history.length})`;
+        this._syncMessageCount();
         if (!this._history.length) {
             this._recentMenu.menu.addMenuItem(new PopupMenu.PopupMenuItem(
                 _('New messages will appear here'), {reactive: false}));
@@ -292,7 +311,7 @@ export default class NtfyExtension extends Extension {
         // Destroying the notification source also disconnects its destroy signal.
         this._source?.destroy();
         this._source = null;
-        // The indicator owns its icon and menu. Destruction cascades to menu
+        // The indicator owns its icon, badge and menu. Destruction cascades to menu
         // items, sections and submenus, including their actor signal handlers.
         this._indicator?.destroy();
         this._indicator = null;
@@ -300,6 +319,7 @@ export default class NtfyExtension extends Extension {
         this._statusRows = null;
         this._history = null;
         this._icon = null;
+        this._badge = null;
         this._notificationToggle = null;
         this._subscriptionsSection = null;
         this._recentMenu = null;

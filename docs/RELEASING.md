@@ -2,7 +2,19 @@
 
 [Documentation home](../README.md#documentation) · [Desktop tests](TESTING.md) · [Installation](INSTALLATION.md)
 
-## Submission candidate
+## Current test build
+
+Version **0.3.1** adds the ntfy panel logo and a badge showing the retained
+message count (up to 20). Reading the history preserves the count; clearing it
+hides the badge. Muting desktop notifications dims the logo and keeps receiving.
+
+Download the [0.3.1 candidate ZIP](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.1-rc.1/ntfy%40shukiv.github.io.shell-extension.zip)
+and [checksums](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.1-rc.1/SHA256SUMS)
+from the [GitHub prerelease](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1),
+or build from `main`. Desktop visual validation remains pending. This update has
+not been uploaded to extensions.gnome.org.
+
+## Initial submission
 
 Version **0.3.0** was submitted to extensions.gnome.org. The owner's listing
 screenshot shows **Unreviewed** on 2026-09-07, under
@@ -11,11 +23,9 @@ Approval has not been confirmed. The listing returns HTTP 404 to anonymous
 visitors, so the owner screenshot is the evidence for this submission status.
 Source is available on `main`, and the GitHub repository is public.
 
-Download the [candidate ZIP](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.0-rc.1/ntfy%40shukiv.github.io.shell-extension.zip)
-and [checksums](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.0-rc.1/SHA256SUMS)
-from the [GitHub prerelease](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.0-rc.1),
-or build from source below. This provides the file to test and upload; it is not
-an approved GNOME Extensions listing.
+The [original 0.3.0 prerelease](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.0-rc.1)
+retains the submitted ZIP and its checksums. Building from current `main`
+produces the newer candidate above.
 
 Submit at [extensions.gnome.org/upload](https://extensions.gnome.org/upload/)
 using your GNOME Extensions account. `gjs.guide/extensions/` contains developer
@@ -24,9 +34,9 @@ documentation; the upload form is on extensions.gnome.org.
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
-| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — awaiting review |
+| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — last reported as awaiting review |
 | UUID | `ntfy@shukiv.github.io` |
-| User-facing version | `0.3.0` in `version-name` |
+| User-facing version | `0.3.1` in `version-name`; initial submission was `0.3.0` |
 | Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
 | Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` |
@@ -64,8 +74,10 @@ sha256sum dist/ntfy@shukiv.github.io.shell-extension.zip
 ```
 
 Use the new UUID's ZIP, not a leftover prototype ZIP in `dist/`.
-The package contains JavaScript sources, metadata, stylesheet, the schema XML
-and license text. GNOME compiles the schema during installation. It excludes
+The package contains JavaScript sources, metadata, stylesheet, the schema XML,
+the ntfy SVG and license notices. The artwork retains Apache-2.0 terms; see
+[attribution](../icons/NOTICE) and [license](../icons/LICENSE-Apache-2.0).
+GNOME compiles the schema during installation. It excludes
 tests, Python scripts, documentation, npm files, and local credentials.
 
 ## Listing description
@@ -76,7 +88,8 @@ The description in `metadata.json` is ready for the listing:
 >
 > Subscribe to public and private topics, store access tokens in the desktop
 > keyring, and read the last 20 received messages in the panel menu. Includes
-> connection status, automatic reconnection, and a desktop notification switch.
+> a panel message-count badge, connection status, automatic reconnection, and a
+> desktop notification switch.
 >
 > Requires libsecret and a desktop keyring for access tokens. Recent history is
 > kept in memory and clears when the extension stops, including screen locking
@@ -86,6 +99,23 @@ For a listing screenshot, capture the actual updated panel with a harmless test
 message and an expanded Recent messages list. An optional preferences screenshot
 can show the token controls with an empty token field. Do not use the older
 screenshot with the hidden message submenu or expose private message contents.
+
+## Listing icon
+
+The puzzle icon on extensions.gnome.org is stored by the website separately
+from the panel icon. Installing a new ZIP does not update that website image.
+
+1. Download [ntfy.png](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.1-rc.1/ntfy.png),
+   or use `assets/ntfy.png` from this repository (512 × 512, transparent PNG).
+2. Sign in to the account that owns
+   [ntfy for GNOME](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/).
+3. Click the puzzle icon beside the extension name and upload the PNG.
+4. Refresh the listing and Installed extensions page to check the result.
+
+This is the icon workflow documented in the
+[GNOME review FAQ](https://extensions.gnome.org/review/8331).
+Both artwork files come unmodified from the requested
+[Dashboard Icons ntfy page](https://dashboardicons.com/icons/ntfy).
 
 ## Submit for review
 
@@ -159,7 +189,7 @@ Shexli 0.2.1. The remaining lifecycle warnings require review of ownership:
 
 | Warning | Ownership and cleanup |
 | --- | --- |
-| `EGO-L-002` for the icon, notification toggle, subscriptions section and recent submenu | They are children of the indicator/menu. `this._indicator.destroy()` destroys that complete tree; references are then cleared. |
+| `EGO-L-002` for the icon, badge, notification toggle, subscriptions section and recent submenu | They are children of the indicator/menu. `this._indicator.destroy()` destroys that complete tree; references are then cleared. |
 | `EGO-L-003` for the notification source's destroy signal | `this._source.destroy()` destroys the emitter and disconnects its signals. If GNOME destroys it earlier, the callback clears the saved reference. |
 
 No duplicate child destruction or linter suppression is added. Review these

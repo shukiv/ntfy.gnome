@@ -1,0 +1,22 @@
+ntfy artwork
+
+icons/ntfy.svg and assets/ntfy.png are unmodified copies from Dashboard Icons:
+https://dashboardicons.com/icons/ntfy
+https://github.com/homarr-labs/dashboard-icons
+Revision: c1f7e6b91c9e23317ac72b81f0ee3f9a4ac14aec
+Source paths: svg/ntfy.svg and png/ntfy.png
+Retrieved: 2026-09-08
+The icon page credits Bjorn Lammers.
+
+Dashboard Icons is distributed under the Apache License, Version 2.0;
+its license is included in LICENSE-Apache-2.0 alongside this notice.
+The ntfy project is by Philipp C. Heckel and contributors:
+https://github.com/binwiederhier/ntfy
+
+Upstream Dashboard Icons notice:
+All product names, trademarks, and registered trademarks are the property of
+their respective owners. Icons are used for identification purposes only and
+do not imply endorsement.
+
+The extension's own code remains GPL-3.0-only. The SVG is bundled for offline
+panel display. The PNG is provided separately for the GNOME Extensions listing.

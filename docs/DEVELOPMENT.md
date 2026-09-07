@@ -22,7 +22,9 @@ GTK process; GSettings is the communication boundary.
 | `lib/tokenPreferences.js` | Native token editor and unlock/remove controls |
 | `lib/credentialMessages.js` | Panel text for credential failures |
 | `schemas/` | GSettings schema |
-| `stylesheet.css` | Native menu text sizing and emphasis |
+| `stylesheet.css` | Native menu text sizing, emphasis, and panel badge |
+| `icons/` | Bundled ntfy panel SVG and third-party license notices |
+| `assets/ntfy.png` | Original PNG for the website listing; excluded from the extension ZIP |
 | `tests/` | Node behavior tests and native runtime harnesses |
 | `scripts/` | Static checks and archive builder |
 | `LICENSE`, `COPYING` | GPL-3.0-only terms, included in the release archive |
@@ -43,8 +45,8 @@ npm run pack
 
 `check` checks JavaScript syntax, metadata/schema agreement, version-name
 consistency, license files, import reachability, Shell/GTK import separation,
-strict schema validation, and all Node tests. `pack` stages runtime files and
-license text, validates the schema XML, writes
+strict schema validation, and all Node tests. `pack` stages runtime files, the
+panel SVG and license notices, validates the schema XML, writes
 `dist/ntfy@shukiv.github.io.shell-extension.zip`, and checks ZIP integrity.
 GNOME compiles the schema at installation time; the generated binary is excluded.
 Documentation and development files are excluded from the archive.
