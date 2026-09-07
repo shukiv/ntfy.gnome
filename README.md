@@ -1,18 +1,30 @@
 # ntfy for GNOME
 
 A GNOME Shell extension that receives [ntfy](https://ntfy.sh) messages and
-shows native desktop notifications. The directory started empty; the
-[blueprint](docs/BLUEPRINT.md) records the design, scope, and next slices.
+shows native desktop notifications, with a panel menu for subscriptions and
+recent messages. Works with ntfy.sh and self-hosted servers.
 
 This is an initial implementation for **GNOME 46–50**, pending testing in a
 real GNOME Shell session. It is not yet a published or release-tested extension.
+
+## Documentation
+
+| Guide | Contents |
+| --- | --- |
+| [Installation](docs/INSTALLATION.md) | Requirements, first install, GNOME refresh, updates, removal |
+| [User guide](docs/USER_GUIDE.md) | Subscriptions, Jabali example, access tokens, messages, notifications |
+| [Troubleshooting](docs/TROUBLESHOOTING.md) | Extension discovery, connection errors, keyring problems, missing messages |
+| [Development](docs/DEVELOPMENT.md) | Project layout, settings, tests, packaging, nested GNOME sessions |
+| [Blueprint](docs/BLUEPRINT.md) | Architecture, protocol decisions, scope, planned work |
+| [Testing](docs/TESTING.md) | Automated coverage and desktop acceptance checks |
 
 ## Included
 
 - Multiple public and private topics on ntfy.sh and self-hosted servers.
 - Access tokens stored in the desktop keyring, shared by server.
 - Native preferences to add, remove, undo removal, or disable subscriptions.
-- Panel menu with connection status, reconnect, and the last 20 messages.
+- Panel menu with connection status, reconnect, and the last 20 messages,
+  with message bodies directly visible in Recent messages.
 - Desktop notifications and a mute switch that keeps receiving messages.
 - Reconnection with backoff, in-memory replay checkpoints, and deduplication.
 
@@ -89,6 +101,8 @@ followed. GSettings stores only a server origin and an opaque keyring item ID.
 Create or revoke tokens in your ntfy server's account settings; see the
 [ntfy access-token documentation](https://docs.ntfy.sh/publish/#access-tokens).
 
+## First subscription and test message
+
 In preferences, enter `https://ntfy.sh` and a hard-to-guess topic name. Public
 topics can be read and written by anyone who knows the name. For your own
 server, use an origin such as `https://notify.example.org` or
@@ -125,9 +139,10 @@ They never use the user's existing keyring. The preferences harness replaces
 only the Shell preferences host; GTK, libadwaita, GSettings, and libsecret are real.
 Packaging includes only the runtime modules, metadata, stylesheet, and schemas.
 
-Shell caches imported JavaScript. Use a fresh nested Shell session or log out
-and in to load changed code. See the [GNOME development guide](https://gjs.guide/extensions/development/creating.html)
-for version-specific nested-session commands. Monitor runtime errors with:
+Shell caches imported JavaScript. Use **Alt+F2 → restart** on X11, log out and
+back in on Wayland, or start a fresh nested Shell to load changed code. See
+[nested-session commands](docs/DEVELOPMENT.md#test-in-a-nested-gnome-session).
+Monitor runtime errors with:
 
 ```sh
 journalctl -f -o cat /usr/bin/gnome-shell

@@ -1,9 +1,15 @@
 # Verification
 
+[Documentation home](../README.md#documentation) · [Development](DEVELOPMENT.md) · [Troubleshooting](TROUBLESHOOTING.md)
+
 ## Automated
 
 - `npm run check`: JavaScript syntax, metadata/schema agreement, strict GSettings
   validation, and Node behavioral tests.
+- `node --test tests/history.test.js`: execute the real history renderer with
+  menu/clock doubles; verify directly visible multiline bodies, title fallback,
+  message order, timestamps, explicit browser actions, and clearing history.
+  This checks menu composition, not native St layout or scrolling.
 - `npm run test:integration`: real GJS and Soup 3, using a loopback fixture for
   UTF-8 streaming, duplicate delivery, reconnect, HTTP 403, redirect refusal,
   and cancellation during a pending read.
@@ -20,7 +26,7 @@
 
 ### Verified in the development container (2026-09-07)
 
-37 Node tests, strict schema compilation, archive construction/integrity,
+40 Node tests, strict schema compilation, archive construction/integrity,
 real GJS/Soup bearer authentication, native preferences, and real keyring tests
 passed. GJS 1.82.3 and
 libadwaita 1.7.6 were extracted into a temporary directory; no system desktop
@@ -29,6 +35,12 @@ warning and an internal warning when locking the test collection; headless GTK
 reported a focus warning. The behavioral assertions passed, including locked
 item handling. These environment warnings still require comparison on a desktop.
 Accessibility behavior itself has not been tested.
+
+The history regression reproduced the reported hidden-body problem before the
+fix, then passed after replacing per-message submenus with visible sections.
+The user's desktop screenshot confirms two connected subscriptions and a
+received history entry in the previous version. The updated menu still needs
+visual verification on that desktop.
 
 ## Desktop acceptance — pending
 
@@ -44,7 +56,11 @@ preferences. The metadata's Shell versions are provisional targets.
 | Remove / Undo | Stream stops; Undo restores subscription |
 | Disable one topic | Its stream stops; other topics continue |
 | Publish a unique message | One notification and one history entry |
-| Title absent / Unicode / long text | Useful fallback; no markup injection; readable text |
+| Expand Recent messages once | Body visible immediately; no second arrow or repeated topic fallback |
+| Title absent / Unicode / long text | Useful fallback; literal markup; multiline and unbroken text wrap |
+| 20 messages / one long message | History scrolls; last message, links and menu controls remain reachable |
+| Receive while reading history | Count updates without stealing focus; reopening shows new content |
+| Clear recent messages | History empties; clear action disabled; server messages unaffected |
 | Priorities 1–2 / 3–5 | Low / normal urgency; never critical |
 | GNOME Do Not Disturb | No popup for incoming messages |
 | Extension notification mute | Messages still appear in recent history |

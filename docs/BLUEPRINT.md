@@ -1,5 +1,7 @@
 # ntfy for GNOME
 
+[Documentation home](../README.md#documentation) · [User guide](USER_GUIDE.md) · [Development](DEVELOPMENT.md)
+
 ## Investigation
 
 The project directory was empty on 2026-09-07: no source, Git repository,
@@ -32,8 +34,8 @@ palette, bundled fonts, or web UI is necessary.
 4. **Release:** real Shell version matrix, accessibility and theme checks,
    translations, packaging metadata and license decision, extension review.
 
-The first slice is the scope of this initial implementation, not a completed
-public release. GNOME 46–50 is the provisional API target, pending the user's
+The first two slices are implemented, with further verification required before
+a public release. GNOME 46–50 is the provisional API target, pending the user's
 desktop version and runtime verification. GNOME 45 and older need a separate
 compatibility decision. `ntfy@ntfy.gnome` is a provisional local UUID; settle
 the public identity before distribution.
@@ -47,10 +49,13 @@ remain unverified.
 
 ```mermaid
 flowchart LR
-    P[GTK / Adwaita preferences] <--> S[GSettings: subscriptions and mute]
+    P[GTK / Adwaita preferences] <--> S[GSettings: subscriptions, mute, token references]
+    P <--> K[Desktop keyring: access tokens]
     S --> E[Extension lifecycle]
     E --> C[Subscription clients]
-    C <--> T[Async Soup 3 transport]
+    C <--> A[Authenticated transport]
+    A --> K
+    A <--> T[Async Soup 3 transport]
     T <--> N[ntfy servers]
     C --> M[Panel menu and recent messages]
     C --> G[GNOME notification tray]
@@ -122,6 +127,12 @@ signals, destroys notifications and UI, and drops in-memory state.
   types, HTTP actions, attachments, and publisher commands are not executed.
 - History lives in memory and is cleared on disable, lock, logout, or restart.
   The extension runs only in the normal user session, not on the lock screen.
+- Expanding Recent messages shows each body directly in an always-visible
+  section, with its topic/title, local timestamp and explicit browser actions.
+  Titles matching the topic are not repeated. Wrapped text and Shell's submenu
+  scrolling accommodate longer messages; desktop layout validation is pending.
+  New arrivals update the count; contents refresh when the row is expanded,
+  avoiding actor replacement and focus changes while someone is reading.
 - No default topic is subscribed and enabling the extension alone sends no request.
 
 ## Acceptance checks
