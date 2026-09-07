@@ -8,6 +8,16 @@ Candidate **0.3.0** is available on `main`, prepared through
 `release/ego-submission`. It has not been submitted to or approved by
 extensions.gnome.org. The GitHub repository is public.
 
+Download the [candidate ZIP](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.0-rc.1/ntfy%40shukiv.github.io.shell-extension.zip)
+and [checksums](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.0-rc.1/SHA256SUMS)
+from the [GitHub prerelease](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.0-rc.1),
+or build from source below. This provides the file to test and upload; it is not
+an approved GNOME Extensions listing.
+
+Submit at [extensions.gnome.org/upload](https://extensions.gnome.org/upload/)
+using your GNOME Extensions account. `gjs.guide/extensions/` contains developer
+documentation; the upload form is on extensions.gnome.org.
+
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
