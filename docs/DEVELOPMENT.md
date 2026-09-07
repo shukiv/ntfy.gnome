@@ -25,7 +25,7 @@ GTK process; GSettings is the communication boundary.
 | `stylesheet.css` | Native menu text sizing and emphasis |
 | `tests/` | Node behavior tests and native runtime harnesses |
 | `scripts/` | Static checks and archive builder |
-| `LICENSE`, `COPYING` | Proposed GPL-2.0-or-later terms, included in the release archive |
+| `LICENSE`, `COPYING` | GPL-3.0-only terms, included in the release archive |
 
 See the [blueprint](BLUEPRINT.md#architecture) for the data flow and design
 decisions. Keep protocol and lifecycle policy independent of GNOME wherever
@@ -169,6 +169,6 @@ for Shell behavior. Update the user guide when controls or behavior change,
 and distinguish implemented features from planned work in the blueprint.
 
 Metadata's Shell versions remain test targets until verified on a desktop.
-License approval, a public support URL, desktop validation, and extension review
+A public support URL, desktop validation, and extension review
 are tracked in [Publishing](RELEASING.md); a passing headless test is not a release
 claim. The public UUID is `ntfy@shukiv.github.io`; retain it for future updates.

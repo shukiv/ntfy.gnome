@@ -158,7 +158,7 @@ If externally edited subscription settings are malformed, the extension stops
 its connections and preserves the saved value. Back up that value before
 repairing it with `gsettings` using the installed schema directory.
 
-The submission candidate uses UUID `ntfy@shukiv.github.io`. GPL-2.0-or-later
-licensing is prepared in [LICENSE](LICENSE) and [COPYING](COPYING), pending the
-owner's approval before public distribution. Desktop validation and the public
-listing are tracked in the [publishing guide](docs/RELEASING.md).
+The submission candidate uses UUID `ntfy@shukiv.github.io`. The project is
+licensed under GNU GPL version 3 (`GPL-3.0-only`); see [LICENSE](LICENSE) and
+[COPYING](COPYING). Desktop validation and the public listing are tracked in
+the [publishing guide](docs/RELEASING.md).

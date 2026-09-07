@@ -32,7 +32,7 @@ palette, bundled fonts, or web UI is necessary.
    and network recovery testing, per-topic priority/mute controls, message
    update/delete semantics, and optional retained history.
 4. **Release:** real Shell version matrix, accessibility and theme checks,
-   translations, packaging metadata and license decision, extension review.
+   translations, packaging metadata and license notices, extension review.
 
 The first two slices are implemented, with further verification required before
 a public release. GNOME 46–50 is the provisional API target, pending the user's
