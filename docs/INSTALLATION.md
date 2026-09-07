@@ -38,9 +38,8 @@ python3 scripts/pack.py
 gnome-extensions install --force dist/ntfy@shukiv.github.io.shell-extension.zip
 ```
 
-If GitHub CLI is not authenticated, run `gh auth login` first. Access to the
-repository is required while it is private. You can also clone with Git using
-your configured GitHub credentials:
+If GitHub CLI asks you to authenticate, use Git directly to clone this public
+repository without signing in:
 
 ```sh
 git clone https://github.com/shukiv/ntfy.gnome.git

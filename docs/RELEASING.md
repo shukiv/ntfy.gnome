@@ -4,15 +4,16 @@
 
 ## Submission candidate
 
-Candidate **0.3.0** is prepared on `release/ego-submission`. It has not been
-submitted or approved. The existing GitHub repository is still private.
+Candidate **0.3.0** is available on `main`, prepared through
+`release/ego-submission`. It has not been submitted to or approved by
+extensions.gnome.org. The GitHub repository is public.
 
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
 | UUID | `ntfy@shukiv.github.io` |
 | User-facing version | `0.3.0` in `version-name` |
-| Homepage | `https://github.com/shukiv/ntfy.gnome` — needs public access before submission |
+| Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
 | Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` |
 | Shell targets | 46–50 in the candidate; select verified versions before uploading |
@@ -30,19 +31,16 @@ source metadata and use `version-name` for the visible project release. See
 
 The owner selected GNU GPL version 3. The applied terms are in
 [LICENSE](../LICENSE), with the full license text in [COPYING](../COPYING).
-Repository visibility approval remains separate from the license choice.
+The owner also approved public repository access; both steps are complete.
 
-1. Make the repository public, or provide another publicly accessible source
-   and issue-reporting URL and update `metadata.json`. Making the current
-   repository public also exposes its existing Git history and documentation.
-2. Record the desktop's `gnome-shell --version` and session type. Install this
+1. Record the desktop's `gnome-shell --version` and session type. Install this
    exact candidate and complete the [desktop acceptance checks](TESTING.md).
    Retain only versions actually verified in `shell-version` for the submission.
-3. Review the implementation and the [architecture](BLUEPRINT.md). The maintainer
+2. Review the implementation and the [architecture](BLUEPRINT.md). The maintainer
    must be able to explain the submitted code; GNOME permits AI assistance as
    a development tool but expects the maintainer to understand and justify it.
    See the [review guidelines](https://gjs.guide/extensions/review-guidelines/review-guidelines.html#extensions-must-not-be-ai-generated).
-4. Build the final ZIP after any metadata or code changes:
+3. Build the final ZIP after any metadata or code changes:
 
 ```sh
 npm run check

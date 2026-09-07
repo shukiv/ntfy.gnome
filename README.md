@@ -43,8 +43,8 @@ normally supplied by the desktop distribution. Building requires
 Python 3 and `glib-compile-schemas`. Node.js 20+ is used only for development checks.
 No npm packages are required.
 
-Clone the repository on the GNOME desktop and build the extension. GitHub
-authentication is required if the repository is private:
+Clone the public repository on the GNOME desktop and build the extension.
+No GitHub authentication is required:
 
 ```sh
 git clone https://github.com/shukiv/ntfy.gnome.git

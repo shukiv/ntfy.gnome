@@ -169,6 +169,6 @@ for Shell behavior. Update the user guide when controls or behavior change,
 and distinguish implemented features from planned work in the blueprint.
 
 Metadata's Shell versions remain test targets until verified on a desktop.
-A public support URL, desktop validation, and extension review
-are tracked in [Publishing](RELEASING.md); a passing headless test is not a release
+Desktop validation and extension review are tracked in
+[Publishing](RELEASING.md); a passing headless test is not a release
 claim. The public UUID is `ntfy@shukiv.github.io`; retain it for future updates.
