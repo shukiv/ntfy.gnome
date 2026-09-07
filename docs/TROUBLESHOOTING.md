@@ -8,18 +8,18 @@ A successful ZIP install writes files, but the running Shell may not have
 discovered them yet. First check the installation as your desktop user:
 
 ```sh
-ls "${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/ntfy@ntfy.gnome/metadata.json"
+ls "${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/ntfy@shukiv.github.io/metadata.json"
 gnome-shell --version
 echo "$XDG_SESSION_TYPE"
-gnome-extensions info ntfy@ntfy.gnome
+gnome-extensions info ntfy@shukiv.github.io
 ```
 
 If the metadata file exists but GNOME cannot find the extension, follow the
 [Shell refresh instructions](INSTALLATION.md#refresh-gnome-shell), then enable
-`ntfy@ntfy.gnome` again. On X11, **Alt+F2 → restart** avoids logging out.
+`ntfy@shukiv.github.io` again. On X11, **Alt+F2 → restart** avoids logging out.
 
 If the file is missing, reinstall the ZIP as the logged-in desktop user.
-Check that you used `dist/ntfy@ntfy.gnome.shell-extension.zip` from the build
+Check that you used `dist/ntfy@shukiv.github.io.shell-extension.zip` from the build
 output. Do not install with `sudo` or from an SSH session logged in as root.
 
 ## Old menu or missing Access tokens page after an update
@@ -35,7 +35,7 @@ The updated menu displays the message body directly under **Recent messages**.
 
 ## No panel icon or an extension error
 
-Run `gnome-extensions info ntfy@ntfy.gnome`. Check that it is enabled and that
+Run `gnome-extensions info ntfy@shukiv.github.io`. Check that it is enabled and that
 the GNOME **Extensions** app allows user extensions. Metadata currently targets
 GNOME 46–50; compatibility testing is still in progress.
 

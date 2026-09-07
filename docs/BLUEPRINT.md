@@ -37,8 +37,8 @@ palette, bundled fonts, or web UI is necessary.
 The first two slices are implemented, with further verification required before
 a public release. GNOME 46–50 is the provisional API target, pending the user's
 desktop version and runtime verification. GNOME 45 and older need a separate
-compatibility decision. `ntfy@ntfy.gnome` is a provisional local UUID; settle
-the public identity before distribution.
+compatibility decision. The public submission uses `ntfy@shukiv.github.io`;
+the earlier `ntfy@ntfy.gnome` prototype requires a one-time installation migration.
 
 Initial status: slices 1 and 2 are implemented. Protocol/lifecycle tests, the
 real GJS networking fixture, native preferences, and disposable GNOME Keyring

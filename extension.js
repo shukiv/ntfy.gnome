@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
@@ -287,8 +289,11 @@ export default class NtfyExtension extends Extension {
             this._settings.disconnect(id);
         this._settingsSignals = null;
         this._settings = null;
+        // Destroying the notification source also disconnects its destroy signal.
         this._source?.destroy();
         this._source = null;
+        // The indicator owns its icon and menu. Destruction cascades to menu
+        // items, sections and submenus, including their actor signal handlers.
         this._indicator?.destroy();
         this._indicator = null;
         this._statusRows?.clear();

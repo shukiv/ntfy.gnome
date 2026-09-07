@@ -1,6 +1,6 @@
 {
   "name": "ntfy-gnome",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,5 +11,7 @@
     "test:preferences": "python3 tests/with_keyring.py python3 tests/preferences.py",
     "test:keyring": "python3 tests/with_keyring.py python3 tests/keyring.py"
   },
-  "engines": {"node": ">=20"}
+  "engines": {
+    "node": ">=20"
+  }
 }

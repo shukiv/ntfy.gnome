@@ -13,7 +13,8 @@
 - `npm run test:integration`: real GJS and Soup 3, using a loopback fixture for
   UTF-8 streaming, duplicate delivery, reconnect, HTTP 403, redirect refusal,
   and cancellation during a pending read.
-- `npm run pack`: compile schema and validate the archive.
+- `npm run pack`: validate schema XML and the archive; GNOME compiles the schema
+  during installation. The generated schema binary is excluded from the ZIP.
 - `npm run test:preferences`: native GTK/libadwaita controls and GSettings with
   a minimal replacement for the Shell preferences host. Tests construction,
   adding, duplicate validation, enabling/disabling, removal, malformed saved
@@ -35,6 +36,12 @@ warning and an internal warning when locking the test collection; headless GTK
 reported a focus warning. The behavioral assertions passed, including locked
 item handling. These environment warnings still require comparison on a desktop.
 Accessibility behavior itself has not been tested.
+
+The 0.3.0 submission candidate reran all 40 Node tests and the three native
+suites successfully. Shexli 0.2.1 reported zero errors and two lifecycle warnings
+about parent-owned objects/signals; the cleanup paths are documented in
+[Publishing](RELEASING.md#static-review-linter). The archive includes license
+text and schema XML, with schema compilation left to the GNOME installer.
 
 The history regression reproduced the reported hidden-body problem before the
 fix, then passed after replacing per-message submenus with visible sections.

@@ -25,6 +25,7 @@ GTK process; GSettings is the communication boundary.
 | `stylesheet.css` | Native menu text sizing and emphasis |
 | `tests/` | Node behavior tests and native runtime harnesses |
 | `scripts/` | Static checks and archive builder |
+| `LICENSE`, `COPYING` | Proposed GPL-2.0-or-later terms, included in the release archive |
 
 See the [blueprint](BLUEPRINT.md#architecture) for the data flow and design
 decisions. Keep protocol and lifecycle policy independent of GNOME wherever
@@ -40,9 +41,12 @@ npm run check
 npm run pack
 ```
 
-`check` checks JavaScript syntax, metadata/schema agreement, strict schema
-validation, and all Node tests. `pack` stages runtime files, compiles the
-schema, writes `dist/ntfy@ntfy.gnome.shell-extension.zip`, and checks ZIP integrity.
+`check` checks JavaScript syntax, metadata/schema agreement, version-name
+consistency, license files, import reachability, Shell/GTK import separation,
+strict schema validation, and all Node tests. `pack` stages runtime files and
+license text, validates the schema XML, writes
+`dist/ntfy@shukiv.github.io.shell-extension.zip`, and checks ZIP integrity.
+GNOME compiles the schema at installation time; the generated binary is excluded.
 Documentation and development files are excluded from the archive.
 
 For focused or native runtime checks:
@@ -97,7 +101,7 @@ dbus-run-session gnome-shell --nested --wayland
 ```
 
 The newer command may require your distribution's Mutter devkit package.
-Inside the nested session, open a terminal and enable `ntfy@ntfy.gnome`.
+Inside the nested session, open a terminal and enable `ntfy@shukiv.github.io`.
 Start a fresh nested session after rebuilding/reinstalling changed JavaScript.
 See the [GNOME development guide](https://gjs.guide/extensions/development/creating.html#wayland-sessions)
 for platform details. A nested session can share your user's saved settings;
@@ -143,7 +147,7 @@ a boolean. Normalization and limits are defined in `lib/config.js`.
 Inspect the installed subscription value without modifying it:
 
 ```sh
-gsettings --schemadir "${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/ntfy@ntfy.gnome/schemas" \
+gsettings --schemadir "${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/ntfy@shukiv.github.io/schemas" \
   get org.gnome.shell.extensions.ntfy subscriptions
 ```
 
@@ -164,6 +168,7 @@ transport, preferences, or keyring changes. Use the desktop acceptance matrix
 for Shell behavior. Update the user guide when controls or behavior change,
 and distinguish implemented features from planned work in the blueprint.
 
-Metadata's Shell versions are provisional targets. A tested desktop matrix,
-license, final extension identity, translations, and extension review remain
-part of release preparation; a passing headless test is not a release claim.
+Metadata's Shell versions remain test targets until verified on a desktop.
+License approval, a public support URL, desktop validation, and extension review
+are tracked in [Publishing](RELEASING.md); a passing headless test is not a release
+claim. The public UUID is `ntfy@shukiv.github.io`; retain it for future updates.

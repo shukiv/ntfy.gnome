@@ -17,6 +17,7 @@ real GNOME Shell session. It is not yet a published or release-tested extension.
 | [Development](docs/DEVELOPMENT.md) | Project layout, settings, tests, packaging, nested GNOME sessions |
 | [Blueprint](docs/BLUEPRINT.md) | Architecture, protocol decisions, scope, planned work |
 | [Testing](docs/TESTING.md) | Automated coverage and desktop acceptance checks |
+| [Publishing](docs/RELEASING.md) | extensions.gnome.org submission candidate and remaining steps |
 
 ## Included
 
@@ -49,7 +50,7 @@ authentication is required if the repository is private:
 git clone https://github.com/shukiv/ntfy.gnome.git
 cd ntfy.gnome
 python3 scripts/pack.py
-gnome-extensions install --force dist/ntfy@ntfy.gnome.shell-extension.zip
+gnome-extensions install --force dist/ntfy@shukiv.github.io.shell-extension.zip
 ```
 
 Refresh Shell after the first installation so it discovers the extension.
@@ -60,9 +61,12 @@ can report that the extension “does not exist” despite a successful install.
 Then:
 
 ```sh
-gnome-extensions enable ntfy@ntfy.gnome
-gnome-extensions prefs ntfy@ntfy.gnome
+gnome-extensions enable ntfy@shukiv.github.io
+gnome-extensions prefs ntfy@shukiv.github.io
 ```
+
+If you installed the earlier `ntfy@ntfy.gnome` prototype, first follow the
+[one-time migration](docs/INSTALLATION.md#migrate-from-the-prototype).
 
 To install updates from this repository:
 
@@ -70,7 +74,7 @@ To install updates from this repository:
 cd ntfy.gnome
 git pull --ff-only
 python3 scripts/pack.py
-gnome-extensions install --force dist/ntfy@ntfy.gnome.shell-extension.zip
+gnome-extensions install --force dist/ntfy@shukiv.github.io.shell-extension.zip
 ```
 
 Refresh Shell using the method for your session type to load the updated
@@ -137,7 +141,8 @@ The integration, preferences, and keyring scripts start a private D-Bus session
 and a disposable GNOME Keyring, requiring `gnome-keyring-daemon` and `gdbus`.
 They never use the user's existing keyring. The preferences harness replaces
 only the Shell preferences host; GTK, libadwaita, GSettings, and libsecret are real.
-Packaging includes only the runtime modules, metadata, stylesheet, and schemas.
+Packaging includes only runtime modules, metadata, stylesheet, schema XML,
+and license text. GNOME compiles the schema during installation.
 
 Shell caches imported JavaScript. Use **Alt+F2 → restart** on X11, log out and
 back in on Wayland, or start a fresh nested Shell to load changed code. See
@@ -153,5 +158,7 @@ If externally edited subscription settings are malformed, the extension stops
 its connections and preserves the saved value. Back up that value before
 repairing it with `gsettings` using the installed schema directory.
 
-The extension UUID is provisional. A license and tested compatibility matrix
-should be settled before publishing a release.
+The submission candidate uses UUID `ntfy@shukiv.github.io`. GPL-2.0-or-later
+licensing is prepared in [LICENSE](LICENSE) and [COPYING](COPYING), pending the
+owner's approval before public distribution. Desktop validation and the public
+listing are tracked in the [publishing guide](docs/RELEASING.md).
