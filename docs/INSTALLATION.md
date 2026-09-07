@@ -30,6 +30,7 @@ echo "$XDG_SESSION_TYPE"
 
 Run these commands as the logged-in desktop user, without `sudo`. Installing
 as root places the extension in root's account rather than yours.
+Follow this order: **install the ZIP → refresh GNOME Shell → enable the extension**.
 
 ```sh
 gh repo clone shukiv/ntfy.gnome
@@ -52,8 +53,19 @@ repository directory yourself. This follows GNOME's
 
 ## Refresh GNOME Shell
 
+**Complete this step after installing the ZIP and before running `enable`.**
 GNOME must discover a newly installed extension and reload changed JavaScript
-after an update. Choose the method matching `XDG_SESSION_TYPE`:
+after every update. Installation can succeed while `enable` still reports
+**Extension “ntfy@shukiv.github.io” does not exist** because Shell has not
+discovered it yet.
+
+Check your session type in a terminal on the GNOME desktop:
+
+```sh
+echo "$XDG_SESSION_TYPE"
+```
+
+Choose the refresh method matching that output:
 
 | Session | Refresh method |
 | --- | --- |
@@ -62,10 +74,13 @@ after an update. Choose the method matching `XDG_SESSION_TYPE`:
 | Development | Start a fresh [nested Shell session](DEVELOPMENT.md#test-in-a-nested-gnome-session). |
 
 Disabling and enabling the extension does not reload imported JavaScript.
+Refreshing the browser or locking and unlocking the screen does not replace
+the Shell refresh. On Wayland, use **Log Out**, then sign in again.
 The GNOME project documents the [restart and nested-session workflow](https://gjs.guide/extensions/development/creating.html#testing-the-extension)
 and [Shell debugging](https://gjs.guide/extensions/development/debugging.html).
 
-After the refresh, enable the extension and open its preferences:
+After the refresh, open a terminal on the desktop, enable the extension,
+check its status, and open its preferences:
 
 ```sh
 gnome-extensions enable ntfy@shukiv.github.io
@@ -93,10 +108,18 @@ python3 scripts/pack.py
 gnome-extensions install --force dist/ntfy@shukiv.github.io.shell-extension.zip
 ```
 
-Use your checkout's actual location if it differs. Then
-[refresh GNOME Shell](#refresh-gnome-shell) to load the update. Close and reopen
-Preferences if it was open. Subscriptions and keyring tokens are retained;
-in-memory recent messages reset when Shell restarts.
+Use your checkout's actual location if it differs. **Refresh GNOME before
+continuing:** on X11, use **Alt+F2 → `restart`**; on Wayland, save your work,
+log out and back in. See [Refresh GNOME Shell](#refresh-gnome-shell) to identify
+your session type. After the refresh:
+
+```sh
+gnome-extensions enable ntfy@shukiv.github.io
+gnome-extensions info ntfy@shukiv.github.io
+```
+
+Close and reopen Preferences if it was open. Subscriptions and keyring tokens
+are retained; in-memory recent messages reset when Shell restarts.
 
 If `git pull --ff-only` reports local changes or diverged history, preserve your
 work before resolving it; recloning is not required for a normal update.

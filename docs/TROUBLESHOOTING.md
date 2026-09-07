@@ -5,22 +5,48 @@
 ## Extension does not exist
 
 A successful ZIP install writes files, but the running Shell may not have
-discovered them yet. First check the installation as your desktop user:
+discovered them yet. This can produce:
+
+```text
+Extension “ntfy@shukiv.github.io” does not exist
+```
+
+The required order is **install → refresh GNOME → enable**. First check the
+installed file and session type as your desktop user:
 
 ```sh
 ls "${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/ntfy@shukiv.github.io/metadata.json"
 gnome-shell --version
 echo "$XDG_SESSION_TYPE"
+```
+
+If the metadata file exists, refresh GNOME using the session type printed above:
+
+- **`x11`:** press **Alt+F2**, type **`restart`**, and press Enter.
+- **`wayland`:** save your work, log out of GNOME, and log back in.
+
+**After the refresh**, open a terminal and run:
+
+```sh
+gnome-extensions enable ntfy@shukiv.github.io
 gnome-extensions info ntfy@shukiv.github.io
 ```
 
-If the metadata file exists but GNOME cannot find the extension, follow the
-[Shell refresh instructions](INSTALLATION.md#refresh-gnome-shell), then enable
-`ntfy@shukiv.github.io` again. On X11, **Alt+F2 → restart** avoids logging out.
+Refreshing the browser or toggling the extension is not a Shell refresh.
+See the [refresh guide](INSTALLATION.md#refresh-gnome-shell) for details.
 
 If the file is missing, reinstall the ZIP as the logged-in desktop user.
 Check that you used `dist/ntfy@shukiv.github.io.shell-extension.zip` from the build
 output. Do not install with `sudo` or from an SSH session logged in as root.
+
+## Website still shows the puzzle icon
+
+The icon on extensions.gnome.org is uploaded separately from the installed
+extension. A Shell refresh loads the new panel logo; it does not upload the
+website image. Sign in to [your extension page](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/),
+click the puzzle icon beside its name, and upload `assets/ntfy.png` from the
+checkout. Use the extension's own page, rather than **Installed extensions**.
+See the [listing icon instructions](RELEASING.md#listing-icon).
 
 ## Old menu or missing Access tokens page after an update
 

@@ -59,15 +59,24 @@ python3 scripts/pack.py
 gnome-extensions install --force dist/ntfy@shukiv.github.io.shell-extension.zip
 ```
 
-Refresh Shell after the first installation so it discovers the extension.
-On **X11**, press **Alt+F2**, enter **`restart`**, and press Enter. On **Wayland**,
-log out of GNOME and back in, or use a nested Shell for development. Check your
-session type with `echo "$XDG_SESSION_TYPE"`. Running `enable` before discovery
-can report that the extension “does not exist” despite a successful install.
-Then:
+**Required order: install → refresh GNOME → enable.** A successful ZIP install
+does not mean the running Shell has discovered the extension. Running `enable`
+before refreshing can report **Extension “ntfy@shukiv.github.io” does not exist**.
+
+Check your session type in a terminal on the GNOME desktop:
+
+```sh
+echo "$XDG_SESSION_TYPE"
+```
+
+- **`x11`:** press **Alt+F2**, type **`restart`**, and press Enter.
+- **`wayland`:** save your work, log out of GNOME, and log back in.
+
+**After that refresh**, enable the extension, check its status, and open preferences:
 
 ```sh
 gnome-extensions enable ntfy@shukiv.github.io
+gnome-extensions info ntfy@shukiv.github.io
 gnome-extensions prefs ntfy@shukiv.github.io
 ```
 
@@ -83,8 +92,18 @@ python3 scripts/pack.py
 gnome-extensions install --force dist/ntfy@shukiv.github.io.shell-extension.zip
 ```
 
-Refresh Shell using the method for your session type to load the updated
-JavaScript. Run these commands as your desktop user, without `sudo`.
+**Refresh GNOME again after every update:** **Alt+F2 → `restart`** on X11;
+save your work, log out and back in on Wayland. Then run:
+
+```sh
+gnome-extensions enable ntfy@shukiv.github.io
+gnome-extensions info ntfy@shukiv.github.io
+```
+
+Toggling the extension off and on does not reload the updated JavaScript.
+Run these commands as your desktop user, without `sudo`. Subscriptions and
+access tokens are retained; recent history resets. See the
+[refresh guide](docs/INSTALLATION.md#refresh-gnome-shell) for details.
 
 ## Access tokens
 
