@@ -49,6 +49,14 @@ The user's desktop screenshot confirms two connected subscriptions and a
 received history entry in the previous version. The updated menu still needs
 visual verification on that desktop.
 
+## Reported desktop (2026-09-08)
+
+The owner ran `gnome-shell --version` on the test desktop and reported
+**GNOME Shell 48.7**. This matches the existing `48` entry in `metadata.json`;
+GNOME uses the major version for extension compatibility. The session type
+has not been reported. This confirms the test environment's version, not a
+complete acceptance pass of the submitted candidate.
+
 ## Desktop acceptance — pending
 
 These checks require a real GNOME Shell session. A successful Node or GJS

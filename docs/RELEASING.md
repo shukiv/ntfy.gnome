@@ -7,7 +7,7 @@
 Version **0.3.0** was submitted to extensions.gnome.org. The owner's listing
 screenshot shows **Unreviewed** on 2026-09-07, under
 [ntfy for GNOME — extension 10898](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/).
-It has not been approved. The listing currently returns HTTP 404 to anonymous
+Approval has not been confirmed. The listing returns HTTP 404 to anonymous
 visitors, so the owner screenshot is the evidence for this submission status.
 Source is available on `main`, and the GitHub repository is public.
 
@@ -31,6 +31,7 @@ documentation; the upload form is on extensions.gnome.org.
 | License | GPL-3.0-only; selected by the owner |
 | Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` |
 | Shell targets | 46–50 declared in the submission; desktop validation remains pending |
+| Reported test desktop | GNOME Shell 48.7, reported by the owner on 2026-09-08; matches the `48` entry |
 
 The namespace follows the maintainer's GitHub account. GNOME treats the change
 from `ntfy@ntfy.gnome` as a new extension: follow the
@@ -47,7 +48,7 @@ The owner selected GNU GPL version 3. The applied terms are in
 [LICENSE](../LICENSE), with the full license text in [COPYING](../COPYING).
 The owner also approved public repository access; both steps are complete.
 
-1. Record the desktop's `gnome-shell --version` and session type. Install this
+1. The test desktop is GNOME Shell 48.7. Record its session type, install this
    exact candidate and complete the [desktop acceptance checks](TESTING.md).
    Record verified versions and adjust `shell-version` in an update if needed.
 2. Review the implementation and the [architecture](BLUEPRINT.md). The maintainer
@@ -110,8 +111,9 @@ message content. Respond to any reviewer requests before uploading a replacement
 The site's **Incompatible** label appears when its compatibility selector cannot
 find an installable version for the detected Shell. An unreviewed first release
 has no approved build available, so the label alone does not establish a runtime
-incompatibility. The desktop's actual GNOME version is still needed to distinguish
-that case from a version outside the declared 46–50 range. See the
+incompatibility. The owner has since reported GNOME Shell 48.7, which matches
+the submitted `48` entry; no `48.7` metadata entry is needed. The browser's
+detected version and the latest account-only review status remain unchecked. See the
 [website's compatibility logic](https://extensions.gnome.org/static/js/extensions.aff5cff579c3.js)
 and [GNOME's review-before-download explanation](https://extensions.gnome.org/about/).
 
