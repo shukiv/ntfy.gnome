@@ -229,22 +229,38 @@ export default class NtfyExtension extends Extension {
                 _('New messages will appear here'), {reactive: false}));
             return;
         }
-        for (const message of this._history) {
-            const item = new PopupMenu.PopupSubMenuMenuItem(`${message.topic}: ${message.title}`);
-            item.label.style_class = 'ntfy-topic-title';
-            const body = new PopupMenu.PopupMenuItem(message.body, {reactive: false});
+        for (const [index, message] of this._history.entries()) {
+            if (index > 0)
+                this._recentMenu.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+            // Sections are always expanded. A submenu here hides the body behind
+            // a second arrow, leaving only the topic visible in recent history.
+            const section = new PopupMenu.PopupMenuSection();
+            const heading = message.title === message.topic
+                ? message.topic : `${message.topic}: ${message.title}`;
+            const title = new PopupMenu.PopupMenuItem(heading, {reactive: false, can_focus: false});
+            title.label.style_class = 'ntfy-message-title';
+            title.label.clutter_text.line_wrap = true;
+            title.label.clutter_text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
+            title.label.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
+            section.addMenuItem(title);
+            const body = new PopupMenu.PopupMenuItem(message.body, {reactive: false, can_focus: false});
             body.label.style_class = 'ntfy-message-body';
             body.label.clutter_text.line_wrap = true;
             body.label.clutter_text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
             body.label.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
-            item.menu.addMenuItem(body);
+            section.addMenuItem(body);
             const time = GLib.DateTime.new_from_unix_local(message.time);
-            if (time)
-                item.menu.addMenuItem(new PopupMenu.PopupMenuItem(time.format('%x %X'), {reactive: false}));
+            if (time) {
+                const timestamp = new PopupMenu.PopupMenuItem(time.format('%x %X'), {
+                    reactive: false, can_focus: false,
+                });
+                timestamp.label.style_class = 'ntfy-message-time';
+                section.addMenuItem(timestamp);
+            }
             if (message.click)
-                item.menu.addAction(_('Open link'), () => this._openUrl(message.click));
-            item.menu.addAction(_('Open topic'), () => this._openUrl(`${message.server}/${message.topic}`));
-            this._recentMenu.menu.addMenuItem(item);
+                section.addAction(_('Open link'), () => this._openUrl(message.click));
+            section.addAction(_('Open topic'), () => this._openUrl(`${message.server}/${message.topic}`));
+            this._recentMenu.menu.addMenuItem(section);
         }
     }
 

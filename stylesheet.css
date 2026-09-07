@@ -5,3 +5,12 @@
 .ntfy-message-body {
     max-width: 28em;
 }
+
+.ntfy-message-title {
+    max-width: 28em;
+    font-weight: bold;
+}
+
+.ntfy-message-time {
+    font-size: 0.85em;
+}
