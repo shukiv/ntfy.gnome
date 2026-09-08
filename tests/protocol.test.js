@@ -50,6 +50,8 @@ test('notification normalization applies safe defaults and size bounds', () => {
     const long = parseMessage(JSON.stringify({...event, title: 't'.repeat(1000), message: 'm'.repeat(5000)}), 'alerts');
     assert.equal(long.title.length, 256);
     assert.equal(long.body.length, 4096);
+    const multiline = parseMessage(JSON.stringify({...event, title: ' Backup\r\n  finished\tnow '}), 'alerts');
+    assert.equal(multiline.title, 'Backup finished now', 'Banner titles must stay on one line');
 });
 
 test('deduplication suppresses repeats and evicts oldest IDs at its bound', () => {

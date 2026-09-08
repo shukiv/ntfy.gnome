@@ -14,6 +14,7 @@ test('server input rejects credentials, paths, query strings and invalid hosts',
     for (const input of ['ntfy.sh', 'file:///tmp', 'https://u:p@ntfy.sh', 'https://ntfy.sh/path',
         'https://ntfy.sh?auth=secret', 'https://ntfy.sh#fragment', 'https://a..b',
         'https://-bad.example', 'http://localhost:65536', 'http://localhost:0',
+        `https://${'a'.repeat(64)}.example`, `https://${`${'a'.repeat(60)}.`.repeat(5)}example`,
         'https://ntfy.sh\\@evil.test', 'https://ntfy.sh\n/evil', null])
         assert.throws(() => normalizeServer(input), undefined, String(input));
 });

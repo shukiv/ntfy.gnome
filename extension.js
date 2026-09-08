@@ -22,7 +22,7 @@ import {credentialStatus} from './lib/credentialMessages.js';
 export default class NtfyExtension extends Extension {
     enable() {
         this._settings = this.getSettings();
-        this._transport = new SoupTransport();
+        this._transport = new SoupTransport({userAgent: `ntfy-gnome/${this.metadata['version-name']}`});
         this._secrets = new SecretStore();
         this._clients = new Map();
         this._statusRows = new Map();
@@ -221,7 +221,7 @@ export default class NtfyExtension extends Extension {
         if (!this._source) {
             const source = new MessageTray.Source({
                 title: _('ntfy'),
-                iconName: 'preferences-system-notifications-symbolic',
+                icon: this._icon.gicon,
             });
             source.connect('destroy', () => {
                 if (this._source === source)

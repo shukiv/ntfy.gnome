@@ -82,6 +82,7 @@ preferences. The metadata's Shell versions are provisional targets.
 | --- | --- |
 | Enable with empty settings | Panel appears; add-topic guidance; no network request |
 | ntfy panel artwork | Bundled logo loads without a network request; dims when muted |
+| Notification banner and list icon | Bundled ntfy logo, matching the panel; no generic bell icon |
 | Receive 1 / 10 / 25 messages | Badge shows 1 / 10 / 20, matching the retained history count |
 | Read history / toggle notification mute | Count is preserved; muted reception still increments it |
 | Add valid topic | Row appears immediately; status becomes Connected |
