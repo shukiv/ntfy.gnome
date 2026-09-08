@@ -28,6 +28,7 @@ export default class NtfyExtension extends Extension {
         this._statusRows = new Map();
         this._history = [];
         this._source = null;
+        this._sourceDestroyId = null;
         this._indicator = new PanelMenu.Button(0.0, _('ntfy'));
         const panelBox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
         this._icon = new St.Icon({
@@ -223,7 +224,7 @@ export default class NtfyExtension extends Extension {
                 title: _('ntfy'),
                 icon: this._icon.gicon,
             });
-            source.connect('destroy', () => {
+            this._sourceDestroyId = source.connect('destroy', () => {
                 if (this._source === source)
                     this._source = null;
             });
@@ -308,11 +309,19 @@ export default class NtfyExtension extends Extension {
             this._settings.disconnect(id);
         this._settingsSignals = null;
         this._settings = null;
-        // Destroying the notification source also disconnects its destroy signal.
-        this._source?.destroy();
+        if (this._source) {
+            this._source.disconnect(this._sourceDestroyId);
+            this._source.destroy();
+        }
         this._source = null;
-        // The indicator owns its icon, badge and menu. Destruction cascades to menu
-        // items, sections and submenus, including their actor signal handlers.
+        this._sourceDestroyId = null;
+        // Destroy menu items and panel children explicitly; each removes itself
+        // from its parent. The indicator then destroys the remaining menu tree.
+        this._subscriptionsSection?.destroy();
+        this._recentMenu?.destroy();
+        this._notificationToggle?.destroy();
+        this._badge?.destroy();
+        this._icon?.destroy();
         this._indicator?.destroy();
         this._indicator = null;
         this._statusRows?.clear();

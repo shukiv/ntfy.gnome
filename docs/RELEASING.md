@@ -175,8 +175,7 @@ are the authority for submission requirements.
 ### Static review linter
 
 The candidate was checked with Shexli 0.2.1. Reproduce the check in a temporary
-virtual environment, outside the extension package. The final candidate reports
-zero errors and two warnings:
+virtual environment, outside the extension package:
 
 ```sh
 python3 -m venv /tmp/ntfy-ego-lint
@@ -185,15 +184,13 @@ python3 -m venv /tmp/ntfy-ego-lint
 ```
 
 The Tree-sitter version is pinned because 0.26.0 crashed in this container with
-Shexli 0.2.1. The remaining lifecycle warnings require review of ownership:
-
-| Warning | Ownership and cleanup |
-| --- | --- |
-| `EGO-L-002` for the icon, badge, notification toggle, subscriptions section and recent submenu | They are children of the indicator/menu. `this._indicator.destroy()` destroys that complete tree; references are then cleared. |
-| `EGO-L-003` for the notification source's destroy signal | `this._source.destroy()` destroys the emitter and disconnects its signals. If GNOME destroys it earlier, the callback clears the saved reference. |
-
-No duplicate child destruction or linter suppression is added. Review these
-ownership paths and check repeated enable/disable on the actual desktop.
+Shexli 0.2.1. The 0.3.0 submission reported two lifecycle warnings, `EGO-L-002`
+for indicator children and `EGO-L-003` for the notification source's destroy
+signal. Since 0.3.1, `disable()` destroys the icon, badge, notification toggle,
+subscriptions section and recent submenu explicitly before the indicator, and
+disconnects the tracked source signal before destroying the source. Each child
+removes itself from its parent on destroy, so no double destruction occurs.
+Check repeated enable/disable on the actual desktop after any lifecycle change.
 
 ## Later releases
 
