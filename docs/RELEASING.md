@@ -11,16 +11,19 @@ hides the badge. Muting desktop notifications dims the logo and keeps receiving.
 Download the [0.3.1 candidate ZIP](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.1-rc.1/ntfy%40shukiv.github.io.shell-extension.zip)
 and [checksums](https://github.com/shukiv/ntfy.gnome/releases/download/v0.3.1-rc.1/SHA256SUMS)
 from the [GitHub prerelease](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1),
-or build from `main`. Desktop visual validation remains pending. This update has
-not been uploaded to extensions.gnome.org.
+or build from `main`. Desktop visual validation remains pending. The prerelease
+ZIP predates the lifecycle cleanup in `1609f0d`; the extensions.gnome.org upload
+was built from that commit.
 
-## Initial submission
+## Submission status
 
-Version **0.3.0** was submitted to extensions.gnome.org. The owner's listing
-screenshot shows **Unreviewed** on 2026-09-07, under
-[ntfy for GNOME — extension 10898](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/).
-Approval has not been confirmed. The listing returns HTTP 404 to anonymous
-visitors, so the owner screenshot is the evidence for this submission status.
+Version **0.3.1** was uploaded to extensions.gnome.org on 2026-09-08 from
+commit `1609f0d` and shows **Unreviewed** under
+[ntfy for GNOME — extension 10898](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
+(review page 74854). The earlier **0.3.0** submission from 2026-09-07 had no
+reviewer comments; the site marks it **Rejected** now that a newer version
+supersedes it. Approval has not been confirmed. The listing returns HTTP 404 to
+anonymous visitors, so the owner's account view is the evidence for this status.
 Source is available on `main`, and the GitHub repository is public.
 
 The [original 0.3.0 prerelease](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.0-rc.1)
@@ -34,12 +37,12 @@ documentation; the upload form is on extensions.gnome.org.
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
-| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — last reported as awaiting review |
+| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.3.1 awaiting review |
 | UUID | `ntfy@shukiv.github.io` |
-| User-facing version | `0.3.1` in `version-name`; initial submission was `0.3.0` |
+| User-facing version | `0.3.1` in `version-name`; submitted 2026-09-08, superseding `0.3.0` |
 | Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
-| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` |
+| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — SHA-256 `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
 | Shell targets | 46–50 declared in the submission; desktop validation remains pending |
 | Reported test desktop | GNOME Shell 48.7, reported by the owner on 2026-09-08; matches the `48` entry |
 

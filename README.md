@@ -8,8 +8,9 @@ Version **0.3.1** adds the ntfy panel logo and a message-count badge.
 Download the [GitHub test build](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1)
 or build from source below.
 
-Version **0.3.0** was [submitted to GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
-and was last reported as awaiting review. The extension targets **GNOME 46–50**;
+Version **0.3.1** was [submitted to GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
+on 2026-09-08 and is awaiting review. It replaces the 0.3.0 submission, which the
+site now lists as rejected after the newer upload. The extension targets **GNOME 46–50**;
 the full desktop compatibility matrix remains unverified. Approval has not been confirmed.
 
 ## Documentation
