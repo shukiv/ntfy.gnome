@@ -12,5 +12,5 @@
   ],
   "settings-schema": "org.gnome.shell.extensions.ntfy",
   "gettext-domain": "ntfy-gnome",
-  "version-name": "0.3.1"
+  "version-name": "0.3.2"
 }

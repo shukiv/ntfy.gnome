@@ -4,8 +4,10 @@ A GNOME Shell extension that receives [ntfy](https://ntfy.sh) messages and
 shows native desktop notifications, with a panel menu for subscriptions and
 recent messages. Works with ntfy.sh and self-hosted servers.
 
-Version **0.3.1** adds the ntfy panel logo and a message-count badge.
-Download the [GitHub test build](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1)
+Version **0.3.2** fixes subscriptions that stayed **Connected** but stopped
+receiving after a dropped connection. Version **0.3.1** adds the ntfy panel logo
+and a message-count badge. Download the
+[GitHub test build](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1)
 or build from source below.
 
 Version **0.3.1** was [submitted to GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)

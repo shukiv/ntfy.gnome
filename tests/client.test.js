@@ -18,7 +18,7 @@ const deferred = () => {
     return {promise, resolve, reject};
 };
 
-function harness(responses = []) {
+function harness(responses = [], options = {}) {
     const timers = new Map();
     const requests = [];
     const messages = [];
@@ -53,6 +53,7 @@ function harness(responses = []) {
         random: () => 1,
         onMessage: message => messages.push(message),
         onStatus: status => statuses.push(status),
+        ...options,
     });
     const retry = async () => {
         const [id, timer] = timers.entries().next().value;
@@ -221,4 +222,80 @@ test('replacing the authenticated transport retains the replay checkpoint and de
     assert.match(opened, /since=249$/);
     assert.deepEqual(h.messages.map(message => message.id), ['one', 'two']);
     h.client.stop();
+});
+
+test('a stream with no data before the idle timeout is cancelled and retried', async () => {
+    const pending = deferred();
+    const h = harness([
+        {read: () => pending.promise, cancel: () => pending.reject(new Error('cancelled'))},
+        {chunks: [chunk(event('after'))]},
+    ], {idleTimeout: 120});
+    h.client.start();
+    await flush();
+    assert.equal(h.statuses.at(-1).state, 'connected');
+    assert.equal(h.timers.size, 1);
+    assert.equal(h.timers.values().next().value.seconds, 120);
+    await h.retry();
+    assert.equal(h.requests[0].cancelled, true);
+    assert.equal(h.requests[0].closed, true);
+    assert.equal(h.statuses.at(-1).state, 'retrying');
+    assert.equal(h.statuses.at(-1).reason, 'No data received');
+    assert.equal(h.timers.size, 1);
+    await h.retry();
+    assert.equal(h.requests.length, 2);
+    assert.deepEqual(h.messages.map(m => m.id), ['after']);
+    h.client.stop();
+    assert.equal(h.timers.size, 0);
+});
+
+test('every received chunk re-arms the idle watchdog and keepalives count as data', async () => {
+    const reads = [deferred(), deferred(), deferred()];
+    let index = 0;
+    const h = harness([{read: () => reads[index++].promise}], {idleTimeout: 120});
+    h.client.start();
+    await flush();
+    const first = h.timers.keys().next().value;
+    reads[0].resolve(chunk('{"event":"keepalive"}'));
+    await flush();
+    const second = h.timers.keys().next().value;
+    assert.notEqual(first, second);
+    assert.equal(h.timers.size, 1);
+    reads[1].resolve(chunk(event('x')));
+    await flush();
+    assert.equal(h.timers.size, 1);
+    assert.notEqual(h.timers.keys().next().value, second);
+    assert.equal(h.messages.length, 1);
+    h.client.stop();
+    assert.equal(h.timers.size, 0);
+});
+
+test('a stalled response header wait is also covered by the idle watchdog', async () => {
+    const pending = deferred();
+    const h = harness([{response: pending.promise, cancel: () => pending.reject(new Error('cancelled'))}],
+        {idleTimeout: 120});
+    h.client.start();
+    await flush();
+    assert.equal(h.timers.size, 1);
+    await h.retry();
+    assert.equal(h.requests[0].cancelled, true);
+    assert.equal(h.statuses.at(-1).state, 'retrying');
+    assert.equal(h.statuses.at(-1).reason, 'No data received');
+    h.client.stop();
+});
+
+test('a stale idle watchdog from a stopped stream never cancels the replacement', async () => {
+    const pending = deferred();
+    const h = harness([{read: () => pending.promise}, {read: () => new Promise(() => {})}], {idleTimeout: 120});
+    h.client.start();
+    await flush();
+    h.client.reconnect();
+    await flush();
+    assert.equal(h.requests.length, 2);
+    assert.equal(h.timers.size, 1);
+    pending.resolve(null);
+    await flush();
+    assert.equal(h.timers.size, 1);
+    assert.equal(h.requests[1].cancelled, false);
+    h.client.stop();
+    assert.equal(h.timers.size, 0);
 });

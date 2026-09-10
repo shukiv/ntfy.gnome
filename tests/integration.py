@@ -15,6 +15,7 @@ gjs = os.environ.get('GJS') or shutil.which('gjs')
 if not gjs:
     raise SystemExit('GJS is required. Install gjs and Soup 3, or set GJS to a local executable.')
 requests = []
+server_closing = threading.Event()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -31,6 +32,27 @@ class Handler(BaseHTTPRequestHandler):
             self.send_response(200 if authenticated else 401)
             self.send_header('Content-Length', '0')
             self.end_headers()
+            return
+        if route.path == '/stalled/json':
+            # Headers and one message, then silence: no keepalive, no EOF.
+            # The client must abandon the stream on its own idle timeout.
+            stalled = sum(urlsplit(path).path == '/stalled/json' for path in requests)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/x-ndjson')
+            self.send_header('Connection', 'close')
+            self.close_connection = True
+            self.end_headers()
+            try:
+                self.wfile.write(json.dumps(dict(id=f'stalled-{stalled}', time=int(time.time()), event='message',
+                                                 topic='stalled', message='before silence')).encode() + b'\n')
+                self.wfile.flush()
+                if stalled == 1:
+                    for _ in range(100):
+                        if server_closing.is_set():
+                            break
+                        time.sleep(0.1)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
             return
         if route.path == '/denied/json':
             self.send_response(403)
@@ -85,7 +107,9 @@ try:
     assert not any(urlsplit(path).path == '/redirect-target' for path in requests)
     assert sum(urlsplit(path).path == '/alerts/json' for path in requests) == 2
     assert not any('tk_private_fixture' in path for path in requests)
-    print('Real GJS/Soup integration passed: streaming, replay, cancellation, keyring-backed bearer auth, anonymous isolation, redirect refusal.')
+    assert sum(urlsplit(path).path == '/stalled/json' for path in requests) >= 2
+    print('Real GJS/Soup integration passed: streaming, replay, cancellation, idle watchdog, keyring-backed bearer auth, anonymous isolation, redirect refusal.')
 finally:
+    server_closing.set()
     server.shutdown()
     server.server_close()

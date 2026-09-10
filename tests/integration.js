@@ -16,19 +16,24 @@ const assert = (condition, message) => {
         throw new Error(message);
 };
 
-function makeClient(topic, onMessage, onStatus) {
+function makeClient(topic, onMessage, onStatus, options = {}) {
     return new SubscriptionClient({id: topic, server, topic, enabled: true}, {
         transport, schedule, cancelScheduled: id => GLib.Source.remove(id),
-        onMessage, onStatus, random: () => 0,
+        onMessage, onStatus, random: () => 0, ...options,
     });
 }
 
 const client = makeClient('alerts', message => messages.push(message), status => statuses.push(status));
 const deniedStatuses = [];
 const denied = makeClient('denied', () => {}, status => deniedStatuses.push(status));
+const stalledMessages = [];
+const stalledStatuses = [];
+const stalled = makeClient('stalled', message => stalledMessages.push(message),
+    status => stalledStatuses.push(status), {idleTimeout: 0.5});
 try {
     client.start();
     denied.start();
+    stalled.start();
     for (let i = 0; i < 60 && messages.length < 2; i++)
         await wait(0.05);
     assert(messages.length === 2, `Expected two unique messages, got ${messages.length}; ${JSON.stringify(statuses)}`);
@@ -36,11 +41,20 @@ try {
     assert(messages[0].id === 'one' && messages[1].id === 'two', 'Replay did not deduplicate');
     assert(statuses.some(status => status.state === 'retrying'), 'EOF did not reconnect');
     assert(deniedStatuses.at(-1)?.state === 'error', '403 must stop retrying');
+    for (let i = 0; i < 80 && stalledMessages.length < 2; i++)
+        await wait(0.05);
+    assert(stalledMessages.map(message => message.id).join() === 'stalled-1,stalled-2',
+        `Silent stream was not abandoned and reconnected: ${JSON.stringify(stalledStatuses)}`);
+    assert(stalledStatuses.some(status => status.state === 'retrying' && status.reason === 'No data received'),
+        'Idle watchdog did not report the stall');
     client.stop();
     denied.stop();
+    stalled.stop();
     const count = statuses.length;
+    const stalledCount = stalledStatuses.length;
     await wait(1.2);
     assert(messages.length === 2 && statuses.length === count, 'Callbacks fired after stop');
+    assert(stalledStatuses.length === stalledCount, 'Watchdog fired after stop');
 
     const redirected = transport.open(`${server}/redirect/json`);
     const response = await redirected.response;
@@ -64,5 +78,6 @@ try {
 } finally {
     client.stop();
     denied.stop();
+    stalled.stop();
     transport.destroy();
 }

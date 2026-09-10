@@ -51,6 +51,16 @@ The user's desktop screenshot confirms two connected subscriptions and a
 received history entry in the previous version. The updated menu still needs
 visual verification on that desktop.
 
+### Idle watchdog verification (2026-09-10)
+
+The user's desktop stayed **Connected** on both topics for two days without
+messages. `ss` showed a single CLOSE-WAIT socket from GNOME Shell to the ntfy
+server's proxy: both topics were multiplexed on one HTTP/2 connection, the
+peer closed it, and libsoup 3.6.5 never completed the pending read. The 0.3.2
+fix passed 47 Node tests and the real GJS/Soup integration test on that
+desktop, including a new fixture that sends one message and then holds the
+socket silent. The previous client failed that fixture, stuck at *connected*.
+
 ### Badge and icon verification (2026-09-08)
 
 The 0.3.1 badge/icon update passes all 43 Node tests, syntax and schema checks,
@@ -100,6 +110,7 @@ preferences. The metadata's Shell versions are provisional targets.
 | Extension notification mute | Messages still appear in recent history |
 | HTTP(S) click action | Browser opens only after explicit user action |
 | Offline / online / suspend | Retry status; reconnection; cached recovery where available |
+| Silent stream (no keepalive for 75 s) | *No data received* retry status; reconnects; two HTTP/1.1 sockets, one per topic |
 | HTTP 403 | Actionable error; no automatic retry loop |
 | Save/replace server token | Shared subscriptions reconnect; other servers stay connected |
 | Keyring locked or token missing | No anonymous request; actionable state in panel |

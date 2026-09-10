@@ -89,6 +89,7 @@ Preferences, even when the panel itself loads.
 | **HTTP 301/302/307/308** | Enter the final server origin. Redirects are deliberately not followed. |
 | Other HTTP errors | Check server availability and the topic, then **Reconnect** after repairing the problem. |
 | Repeated **Reconnecting** | Check DNS, network connectivity, TLS certificate validity, and whether the server permits streaming subscriptions. |
+| **Reconnecting** with *No data received* | The stream stayed silent for 75 seconds. ntfy sends a keepalive every 45 seconds, so the connection was dropped by a proxy, NAT, or the network without an error. Reconnection is automatic. |
 
 Transient stream/network failures retry automatically with increasing delays.
 Most HTTP 3xx/4xx failures stop until a manual retry or a configuration change;
@@ -106,6 +107,15 @@ wait up to five minutes. Saving/replacing a token reconnects its server's topics
 4. If the message is in history but there is no banner, enable **Desktop
    notifications** and check GNOME's Do Not Disturb and notification settings.
    Low-priority messages intentionally do not display a banner.
+
+Before 0.3.2, a subscription could stay **Connected** for hours or days while
+receiving nothing. Both topics shared one HTTP/2 connection through the
+server's proxy; when the proxy dropped it, libsoup never reported an error and
+the stream waited forever. Version 0.3.2 opens one HTTP/1.1 connection per
+topic and abandons any stream that is silent for 75 seconds, reporting
+*No data received* while it reconnects. Messages published during such a stall
+are replayed after the reconnect only if the server's message cache still holds
+them. Update to 0.3.2 or later if a Shell restart makes messages appear again.
 
 Screen locking, disabling the extension, logout, and Shell restart clear local
 history. Messages sent while the extension is disabled are not recovered at the

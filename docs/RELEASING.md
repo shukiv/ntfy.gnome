@@ -4,6 +4,12 @@
 
 ## Current test build
 
+Version **0.3.2** (in `main`, not yet uploaded) fixes subscriptions that stayed
+**Connected** without receiving anything after the server's proxy dropped the
+shared HTTP/2 connection. Each topic now uses its own HTTP/1.1 connection, and a
+stream that is silent for 75 seconds is abandoned and reconnected with the
+status *No data received*. The real GJS/Soup integration test covers the stall.
+
 Version **0.3.1** adds the ntfy panel logo and a badge showing the retained
 message count (up to 20). Reading the history preserves the count; clearing it
 hides the badge. Muting desktop notifications dims the logo and keeps receiving.
@@ -37,12 +43,12 @@ documentation; the upload form is on extensions.gnome.org.
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
-| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.3.1 awaiting review |
+| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.3.1 awaiting review; 0.3.2 not yet uploaded |
 | UUID | `ntfy@shukiv.github.io` |
-| User-facing version | `0.3.1` in `version-name`; submitted 2026-09-08, superseding `0.3.0` |
+| User-facing version | `0.3.2` in `version-name`; `0.3.1` submitted 2026-09-08, superseding `0.3.0` |
 | Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
-| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — SHA-256 `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
+| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — 0.3.2 build SHA-256 `d2e78d0c11e03073e66bd1c1e145decec8bbe1539aa68b322a7dc6abb8341c8d`; the 0.3.1 upload had `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
 | Shell targets | 46–50 declared in the submission; desktop validation remains pending |
 | Reported test desktop | GNOME Shell 48.7, reported by the owner on 2026-09-08; matches the `48` entry |
 
