@@ -24,7 +24,7 @@ palette, bundled fonts, or web UI is necessary.
 
 1. **Initial implementation:** public subscriptions on ntfy.sh or self-hosted
    origins; add/remove/enable topics; native notifications; global mute;
-   connection status; reconnect; bounded recent messages; installable archive.
+   connection status; reconnect; bounded per-topic messages; installable archive.
 2. **Private subscriptions:** per-server bearer tokens in Secret Service;
    explicit locked-keyring and authorization states; credential replacement.
    Tokens never belong in GSettings, query parameters, or logs.
@@ -57,7 +57,7 @@ flowchart LR
     A --> K
     A <--> T[Async Soup 3 transport]
     T <--> N[ntfy servers]
-    C --> M[Panel menu and recent messages]
+    C --> M[Panel menu with per-topic messages]
     C --> G[GNOME notification tray]
 ```
 
@@ -107,15 +107,20 @@ Consume newline-delimited JSON from `/<topic>/json`. Ignore protocol control
 events and malformed messages. Retry interrupted streams using an in-memory
 timestamp checkpoint and bounded message-ID deduplication. Include the last
 second in replay so messages with equal timestamps aren't skipped. Start at
-the subscription's activation time with one second of overlap; don't load the
-entire historical cache.
+the subscription's first activation time with one second of overlap; don't
+load the entire historical cache. Persist each running topic's checkpoint and
+its newest 20 message IDs in settings, so a client created after a lock, logout
+or Shell restart replays what was published meanwhile without repeating
+messages already shown. Disabled and removed topics drop their checkpoint.
 Recovery depends on server retention and is not an exactly-once guarantee.
 
 Transient failures use exponential backoff with jitter, capped at 60 seconds;
-honor bounded `Retry-After`. Permanent HTTP errors wait for manual retry or
-configuration changes. Bound input lines to 64 KiB and recent history to 20
+honor bounded `Retry-After`. No failure is final: HTTP 3xx/4xx rejections retry
+from 30 seconds up to five minutes, sparing the server's authentication limits,
+and keyring or token errors retry on the transient schedule. Bound input lines to 64 KiB and recent history to 20
 messages. Disabling the extension cancels requests and timers, disconnects
-signals, destroys notifications and UI, and drops in-memory state.
+signals, destroys notifications and UI, saves replay checkpoints, and drops
+in-memory state.
 
 ## Notification behavior
 
@@ -127,12 +132,14 @@ signals, destroys notifications and UI, and drops in-memory state.
   types, HTTP actions, attachments, and publisher commands are not executed.
 - History lives in memory and is cleared on disable, lock, logout, or restart.
   The extension runs only in the normal user session, not on the lock screen.
-- Expanding Recent messages shows each body directly in an always-visible
-  section, with its topic/title, local timestamp and explicit browser actions.
-  Titles matching the topic are not repeated. Wrapped text and Shell's submenu
-  scrolling accommodate longer messages; desktop layout validation is pending.
-  New arrivals update the count; contents refresh when the row is expanded,
-  avoiding actor replacement and focus changes while someone is reading.
+- Expanding a subscription shows its last 20 messages directly in
+  always-visible sections, each with an optional title, local timestamp and an
+  explicit link action. There is no shared list across topics. Titles matching
+  the topic are not repeated. Wrapped text and Shell's submenu scrolling
+  accommodate longer messages; desktop layout validation is pending.
+  New arrivals update the row and badge counts; contents refresh when the row
+  is expanded, avoiding actor replacement and focus changes while someone is
+  reading. Removing or retargeting a subscription discards its messages.
 - No default topic is subscribed and enabling the extension alone sends no request.
 
 ## Acceptance checks

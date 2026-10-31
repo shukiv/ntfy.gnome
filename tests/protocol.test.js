@@ -68,6 +68,10 @@ test('retry delay grows and remains capped, with bounded server guidance', () =>
     assert.equal(retryDelay(0, () => 0), 0.75);
     assert.equal(retryDelay(1, () => 1), 2);
     assert.equal(retryDelay(100, () => 1), 60);
+    assert.equal(retryDelay(0, () => 1, {base: 30, max: 300}), 30);
+    assert.equal(retryDelay(3, () => 1, {base: 30, max: 300}), 240);
+    assert.equal(retryDelay(4, () => 0, {base: 30, max: 300}), 225);
+    assert.equal(retryDelay(1000, () => 1, {base: 30, max: 300}), 300);
     assert.equal(retryAfterSeconds('120', 0), 120);
     assert.equal(retryAfterSeconds('99999', 0), 300);
     assert.equal(retryAfterSeconds('Thu, 01 Jan 1970 00:01:00 GMT', 0), 60);

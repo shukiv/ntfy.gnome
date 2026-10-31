@@ -1,19 +1,20 @@
 # ntfy for GNOME
 
 A GNOME Shell extension that receives [ntfy](https://ntfy.sh) messages and
-shows native desktop notifications, with a panel menu for subscriptions and
-recent messages. Works with ntfy.sh and self-hosted servers.
+shows native desktop notifications, with a panel menu that lists each
+subscription and its messages. Works with ntfy.sh and self-hosted servers.
 
-Version **0.3.2** fixes subscriptions that stayed **Connected** but stopped
+Version **0.4.0** shows messages inside each subscription and removes the
+shared Recent messages list. Version **0.3.2** fixes subscriptions that stayed **Connected** but stopped
 receiving after a dropped connection. Version **0.3.1** adds the ntfy panel logo
 and a message-count badge. Download the
 [GitHub test build](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1)
 or build from source below.
 
-Version **0.3.1** was [submitted to GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
-on 2026-09-08 and is awaiting review. It replaces the 0.3.0 submission, which the
-site now lists as rejected after the newer upload. The extension targets **GNOME 46–50**;
-the full desktop compatibility matrix remains unverified. Approval has not been confirmed.
+Version **0.4.0** is [approved on GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
+as of 2026-10-31 and installs from that page. The extension targets **GNOME 46–50**;
+only GNOME Shell 48 on X11 has been exercised on a desktop, so the rest of the
+compatibility matrix remains unverified.
 
 ## Documentation
 
@@ -32,11 +33,12 @@ the full desktop compatibility matrix remains unverified. Approval has not been 
 - Multiple public and private topics on ntfy.sh and self-hosted servers.
 - Access tokens stored in the desktop keyring, shared by server.
 - Native preferences to add, remove, undo removal, or disable subscriptions.
-- Panel menu with connection status, reconnect, and the last 20 messages,
-  with message bodies directly visible in Recent messages.
+- Panel menu with connection status, reconnect, and each topic's last 20
+  messages, with message bodies directly visible inside the topic.
 - ntfy panel logo with a badge counting retained messages; clearing history hides it.
 - Desktop notifications and a mute switch that keeps receiving messages.
-- Reconnection with backoff, in-memory replay checkpoints, and deduplication.
+- Reconnection that never gives up, with backoff, saved replay checkpoints that
+  recover messages missed during a lock or restart, and deduplication.
 
 Persistent history, attachments, publishing, and message update/delete events
 are planned separately. History and replay

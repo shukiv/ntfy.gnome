@@ -8,16 +8,30 @@
     text-align: center;
 }
 
+.ntfy-menu {
+    min-width: 28em;
+}
+
 .ntfy-topic-title {
-    max-width: 28em;
+    max-width: 30em;
+}
+
+.ntfy-message {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.ntfy-message-box {
+    spacing: 0.3em;
 }
 
 .ntfy-message-body {
-    max-width: 28em;
+    max-width: 30em;
 }
 
 .ntfy-message-title {
-    max-width: 28em;
+    max-width: 30em;
+    font-size: 1.1em;
     font-weight: bold;
 }
 

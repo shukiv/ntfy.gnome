@@ -98,20 +98,38 @@ test('replay advances to one second before last received message without clock p
     h.client.stop();
 });
 
-test('permanent HTTP failures wait for manual reconnect', async () => {
+test('HTTP 3xx/4xx failures keep retrying on a slow schedule that spares the server', async () => {
     for (const status of [301, 302, 400, 401, 403, 404]) {
-        const h = harness([{status}]);
+        const h = harness([{status}, {status}, {status}, {status}, {status}, {chunks: [chunk(event('ok'))]}]);
         h.client.start();
         await flush();
-        assert.equal(h.statuses.at(-1).state, 'error');
-        assert.equal(h.statuses.at(-1).reason, `HTTP ${status}`);
-        assert.equal(h.timers.size, 0);
-        assert.equal(h.requests[0].closed, true);
-        h.client.reconnect();
-        await flush();
-        assert.equal(h.requests.length, 2);
+        const delays = [];
+        for (let i = 0; i < 5; i++) {
+            assert.deepEqual(h.statuses.at(-1), {state: 'error', reason: `HTTP ${status}`,
+                seconds: h.timers.values().next().value.seconds});
+            assert.equal(h.requests.at(-1).closed, true);
+            assert.equal(h.timers.size, 1);
+            delays.push(h.timers.values().next().value.seconds);
+            await h.retry();
+        }
+        assert.deepEqual(delays, [30, 60, 120, 240, 300]);
+        assert.equal(h.requests.length, 6);
+        assert.deepEqual(h.messages.map(m => m.id), ['ok']);
         h.client.stop();
     }
+});
+
+test('manual reconnect after an HTTP error retries at once and restarts the schedule', async () => {
+    const h = harness([{status: 403}, {status: 403}]);
+    h.client.start();
+    await flush();
+    await h.retry();
+    assert.equal(h.timers.values().next().value.seconds, 60);
+    h.client.reconnect();
+    await flush();
+    assert.equal(h.requests.length, 3);
+    h.client.stop();
+    assert.equal(h.timers.size, 0);
 });
 
 test('rate limiting honors Retry-After and transient server failures retry', async () => {
@@ -193,16 +211,25 @@ test('simultaneous clients keep independent duplicate caches', async () => {
     second.client.stop();
 });
 
-test('credential errors stop retries and present an actionable credential state', async () => {
+test('credential errors show an actionable state and keep retrying until the keyring answers', async () => {
     for (const code of ['keyring-locked', 'token-missing', 'keyring-unavailable']) {
-        const pending = deferred();
-        const h = harness([{response: pending.promise}]);
+        const first = deferred();
+        const second = deferred();
+        const h = harness([{response: first.promise}, {response: second.promise}, {chunks: [chunk(event('ok'))]}]);
         h.client.start();
-        pending.reject(new CredentialError(code));
+        first.reject(new CredentialError(code));
         await flush();
-        assert.deepEqual(h.statuses.at(-1), {state: 'credentials', code});
-        assert.equal(h.timers.size, 0);
+        assert.deepEqual(h.statuses.at(-1), {state: 'credentials', code, seconds: 1});
+        assert.equal(h.timers.size, 1);
+        const retrying = h.retry();
+        second.reject(new CredentialError(code));
+        await retrying;
+        assert.deepEqual(h.statuses.at(-1), {state: 'credentials', code, seconds: 2});
+        await h.retry();
+        assert.ok(h.statuses.some(status => status.state === 'connected'));
+        assert.deepEqual(h.messages.map(m => m.id), ['ok']);
         h.client.stop();
+        assert.equal(h.timers.size, 0);
     }
 });
 
@@ -298,4 +325,46 @@ test('a stale idle watchdog from a stopped stream never cancels the replacement'
     assert.equal(h.requests[1].cancelled, false);
     h.client.stop();
     assert.equal(h.timers.size, 0);
+});
+
+test('a saved checkpoint replays messages missed while the client did not exist', async () => {
+    const h = harness([{chunks: [chunk(event('old', 150), event('missed', 160))]}], {since: 149, seen: ['old']});
+    h.client.start();
+    await flush();
+    assert.match(h.requests[0].url, /since=149$/);
+    assert.deepEqual(h.messages.map(m => m.id), ['missed'], 'A message shown before the restart is not repeated');
+    assert.deepEqual(h.client.checkpoint, {since: 159, seen: ['old', 'missed']});
+    h.client.stop();
+});
+
+test('a checkpoint is available before any message and rejects invalid saved values', async () => {
+    const fresh = harness();
+    assert.deepEqual(fresh.client.checkpoint, {since: 199, seen: []});
+    for (const since of [-1, 1.5, '149', null, 10_000_000]) {
+        const h = harness([], {since});
+        assert.equal(h.client.checkpoint.since, 199, String(since));
+    }
+});
+
+test('the checkpoint keeps only the newest message ids', async () => {
+    const events = Array.from({length: 30}, (_, i) => event(`m${i}`, 150));
+    const h = harness([{chunks: [chunk(...events)]}]);
+    h.client.start();
+    await flush();
+    const {seen} = h.client.checkpoint;
+    assert.equal(seen.length, 20);
+    assert.equal(seen[0], 'm10');
+    assert.equal(seen.at(-1), 'm29');
+    h.client.stop();
+});
+
+test('a watchdog stall during the keyring lookup is not reported as a credential error', async () => {
+    const pending = deferred();
+    const h = harness([{response: pending.promise, cancel: () => pending.reject(new CredentialError('cancelled'))}],
+        {idleTimeout: 120});
+    h.client.start();
+    await flush();
+    await h.retry();
+    assert.deepEqual(h.statuses.at(-1), {state: 'retrying', reason: 'No data received', seconds: 1});
+    h.client.stop();
 });

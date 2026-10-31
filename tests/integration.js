@@ -1,11 +1,15 @@
+import 'gi://Soup?version=3.0';
 import GLib from 'gi://GLib';
 import {SubscriptionClient} from '../lib/client.js';
-import {SoupTransport, schedule} from '../lib/transport.js';
+import {SoupTransport} from '../lib/transport.js';
+import {Timeouts} from '../lib/timeouts.js';
 import {AuthenticatedTransport} from '../lib/auth.js';
 import {SecretStore} from '../lib/secrets.js';
 
 const server = ARGV[0];
 const transport = new SoupTransport();
+const timeouts = new Timeouts();
+const schedule = (seconds, callback) => timeouts.add(seconds, callback);
 if (GLib.getenv('NTFY_KEYRING_TEST') !== '1')
     throw new Error('Run via tests/with_keyring.py to use a disposable keyring.');
 const statuses = [];
@@ -18,7 +22,7 @@ const assert = (condition, message) => {
 
 function makeClient(topic, onMessage, onStatus, options = {}) {
     return new SubscriptionClient({id: topic, server, topic, enabled: true}, {
-        transport, schedule, cancelScheduled: id => GLib.Source.remove(id),
+        transport, schedule, cancelScheduled: id => timeouts.remove(id),
         onMessage, onStatus, random: () => 0, ...options,
     });
 }
@@ -40,7 +44,8 @@ try {
     assert(messages.every(message => message.body === 'שלום 🌍 café'), 'UTF-8 was not preserved');
     assert(messages[0].id === 'one' && messages[1].id === 'two', 'Replay did not deduplicate');
     assert(statuses.some(status => status.state === 'retrying'), 'EOF did not reconnect');
-    assert(deniedStatuses.at(-1)?.state === 'error', '403 must stop retrying');
+    assert(deniedStatuses.at(-1)?.state === 'error' && deniedStatuses.at(-1).seconds >= 22,
+        '403 must report an error and schedule a slow retry');
     for (let i = 0; i < 80 && stalledMessages.length < 2; i++)
         await wait(0.05);
     assert(stalledMessages.map(message => message.id).join() === 'stalled-1,stalled-2',
@@ -79,5 +84,6 @@ try {
     client.stop();
     denied.stop();
     stalled.stop();
+    timeouts.clear();
     transport.destroy();
 }

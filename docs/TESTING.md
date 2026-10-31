@@ -6,12 +6,17 @@
 
 - `npm run check`: JavaScript syntax, metadata/schema agreement, strict GSettings
   validation, and Node behavioral tests.
-- `node --test tests/history.test.js`: execute the real history renderer with
-  menu/clock doubles; verify directly visible multiline bodies, title fallback,
-  message order, timestamps, explicit browser actions, and clearing history.
-  Also verifies badge visibility, muted reception, the 20-message cap, retaining
-  the count when reading, and accessible count/mute text.
+- `node --test tests/history.test.js`: execute the real per-topic message
+  renderer with menu/clock doubles; verify directly visible multiline bodies
+  inside the right subscription, no repeated topic title, message order,
+  timestamps, explicit browser actions, and clearing one topic or all topics.
+  Also verifies row labels with count and status, the badge total, muted
+  reception, the 20-message cap per topic, discarding messages of removed or
+  retargeted subscriptions, and accessible count/mute text.
   This checks menu composition, not native St layout or scrolling.
+- `node --test tests/replay.test.js`: saved replay state round-trips, discards
+  malformed or oversized input, bounds future checkpoints, and keeps only the
+  newest message IDs.
 - `npm run test:integration`: real GJS and Soup 3, using a loopback fixture for
   UTF-8 streaming, duplicate delivery, reconnect, HTTP 403, redirect refusal,
   and cancellation during a pending read.
@@ -93,32 +98,37 @@ preferences. The metadata's Shell versions are provisional targets.
 | Enable with empty settings | Panel appears; add-topic guidance; no network request |
 | ntfy panel artwork | Bundled logo loads without a network request; dims when muted |
 | Notification banner and list icon | Bundled ntfy logo, matching the panel; no generic bell icon |
-| Receive 1 / 10 / 25 messages | Badge shows 1 / 10 / 20, matching the retained history count |
+| Receive 1 / 10 / 25 messages on one topic | Badge and row count show 1 / 10 / 20 |
+| Receive on two topics | Each row lists only its own messages; badge shows the total |
 | Read history / toggle notification mute | Count is preserved; muted reception still increments it |
 | Add valid topic | Row appears immediately; status becomes Connected |
 | Invalid server/topic or duplicate | Error near form; existing subscriptions survive |
 | Remove / Undo | Stream stops; Undo restores subscription |
 | Disable one topic | Its stream stops; other topics continue |
 | Publish a unique message | One notification and one history entry |
-| Expand Recent messages once | Body visible immediately; no second arrow or repeated topic fallback |
+| Message card appearance | Normal text brightness, not dimmed; time above, bold title, wrapped body; menu about 28em wide |
+| Expand a subscription once | Its messages visible immediately; no second arrow, no shared Recent messages row |
 | Title absent / Unicode / long text | Useful fallback; literal markup; multiline and unbroken text wrap |
 | 20 messages / one long message | History scrolls; last message, links and menu controls remain reachable |
 | Receive while reading history | Count updates without stealing focus; reopening shows new content |
-| Clear recent messages | History empties; badge hides; clear action disabled; server messages unaffected |
+| Clear messages (topic) / Clear all messages | Topic or all topics empty; counts and badge update; action disabled when empty; server messages unaffected |
+| Remove or retarget a subscription | Its retained messages are discarded; other topics keep theirs |
 | Priorities 1–2 / 3–5 | Low / normal urgency; never critical |
 | GNOME Do Not Disturb | No popup for incoming messages |
 | Extension notification mute | Messages still appear in recent history |
 | HTTP(S) click action | Browser opens only after explicit user action |
 | Offline / online / suspend | Retry status; reconnection; cached recovery where available |
 | Silent stream (no keepalive for 75 s) | *No data received* retry status; reconnects; two HTTP/1.1 sockets, one per topic |
-| HTTP 403 | Actionable error; no automatic retry loop |
+| HTTP 403 | Actionable error with *retrying in Ns*; retries from 30 s up to 5 min; recovers without **Reconnect** once access is granted |
+| Keyring locked at login | Status shows the wait; connects by itself after the keyring unlocks |
+| Publish while locked or logged out | Messages arrive with banners after unlock or login; earlier messages are not repeated |
 | Save/replace server token | Shared subscriptions reconnect; other servers stay connected |
 | Keyring locked or token missing | No anonymous request; actionable state in panel |
 | Unlock in Preferences | Native keyring prompt if needed; affected server retries |
 | Remove server token | Item removed from keyring; affected server uses anonymous access |
 | Close Preferences during token operation | Pending operation cancelled; no updates to destroyed widgets |
 | Disable during connect/read/retry | No later notifications, callbacks, timers, or actors |
-| Lock and unlock | Extension stops, clears memory, and resumes as a fresh session |
+| Lock and unlock | Extension stops, clears message lists, saves checkpoints, and resumes from them |
 | Rapid disable/enable cycles | One panel indicator and one client per enabled topic |
 | Open/close preferences repeatedly | No signal-handler warnings |
 | Keyboard, scaling, light/dark | Native focus behavior and readable controls |

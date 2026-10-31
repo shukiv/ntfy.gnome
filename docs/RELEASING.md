@@ -4,7 +4,15 @@
 
 ## Current test build
 
-Version **0.3.2** (in `main`, not yet uploaded) fixes subscriptions that stayed
+Version **0.4.0** (in `main`, not yet uploaded) lists messages inside each
+subscription, with a per-topic count in the row label, a 20-message limit per
+topic, and **Clear messages** per topic. The shared Recent messages list is
+removed; **Clear all messages** replaces **Clear recent messages**. Every
+error state now retries by itself, and replay checkpoints persist in the new
+`replay-state` setting so messages published during a lock, logout or restart
+are fetched afterwards.
+
+Version **0.3.2** (not uploaded) fixes subscriptions that stayed
 **Connected** without receiving anything after the server's proxy dropped the
 shared HTTP/2 connection. Each topic now uses its own HTTP/1.1 connection, and a
 stream that is silent for 75 seconds is abandoned and reconnected with the
@@ -23,12 +31,24 @@ was built from that commit.
 
 ## Submission status
 
-Version **0.3.1** was uploaded to extensions.gnome.org on 2026-09-08 from
-commit `1609f0d` and shows **Unreviewed** under
+Version **0.4.0** was uploaded to extensions.gnome.org on 2026-10-31 (ZIP
+SHA-256 `7564eb981f33e0f17e6e4a1594abf244d02c483d929e5cfbe827efcb6126e1b1`)
+and was **approved the same day**: review page 77516 lists "0.4.0 (3)" as
+**Active**, reviewed by JustPerfection with no further comments, and the
 [ntfy for GNOME — extension 10898](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
-(review page 74854). The earlier **0.3.0** submission from 2026-09-07 had no
-reviewer comments; the site marks it **Rejected** now that a newer version
-supersedes it. Approval has not been confirmed. The listing returns HTTP 404 to
+listing now answers HTTP 200 to anonymous visitors. The site's Shexli run
+reported no issues.
+
+On 2026-10-31 the reviewer asked for two changes to 0.3.1 (review page
+74854): import Soup without a `?version=3.0` query, and make timeout cleanup
+visible in one place instead of across several modules. Both are done in
+`main`: `lib/transport.js` imports `gi://Soup`, and `lib/timeouts.js`
+registers every main-loop timeout so `disable()` clears them with one call.
+The site now marks 0.3.1 **Rejected**.
+
+Version **0.3.1** was uploaded on 2026-09-08 from commit `1609f0d`. The
+earlier **0.3.0** submission from 2026-09-07 had no reviewer comments; the
+site marks it **Rejected** now that newer versions supersede it. The listing returns HTTP 404 to
 anonymous visitors, so the owner's account view is the evidence for this status.
 Source is available on `main`, and the GitHub repository is public.
 
@@ -43,12 +63,12 @@ documentation; the upload form is on extensions.gnome.org.
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
-| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.3.1 awaiting review; 0.3.2 not yet uploaded |
+| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.4.0 approved 2026-10-31; 0.3.2 was never uploaded |
 | UUID | `ntfy@shukiv.github.io` |
-| User-facing version | `0.3.2` in `version-name`; `0.3.1` submitted 2026-09-08, superseding `0.3.0` |
+| User-facing version | `0.4.0` in `version-name`, approved 2026-10-31; `0.3.1` (2026-09-08) and `0.3.0` (2026-09-07) are marked rejected |
 | Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
-| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — 0.3.2 build SHA-256 `d2e78d0c11e03073e66bd1c1e145decec8bbe1539aa68b322a7dc6abb8341c8d`; the 0.3.1 upload had `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
+| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — 0.4.0 build SHA-256 `7564eb981f33e0f17e6e4a1594abf244d02c483d929e5cfbe827efcb6126e1b1`; the 0.3.1 upload had `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
 | Shell targets | 46–50 declared in the submission; desktop validation remains pending |
 | Reported test desktop | GNOME Shell 48.7, reported by the owner on 2026-09-08; matches the `48` entry |
 
@@ -105,7 +125,7 @@ The description in `metadata.json` is ready for the listing:
 > and logout.
 
 For a listing screenshot, capture the actual updated panel with a harmless test
-message and an expanded Recent messages list. An optional preferences screenshot
+message and an expanded subscription showing it. An optional preferences screenshot
 can show the token controls with an empty token field. Do not use the older
 screenshot with the hidden message submenu or expose private message contents.
 
@@ -141,16 +161,18 @@ The owner completed the initial upload in their browser. This development
 environment still has no authenticated extensions.gnome.org session; subsequent
 uploads and account-only review actions need the owner's browser.
 
-## Awaiting review
+## After approval
 
-The next step is to monitor the **Unreviewed** link on the listing and the
-account's review email. Add a screenshot of the actual extension with harmless
-message content. Respond to any reviewer requests before uploading a replacement.
+0.4.0 is approved, so the listing installs through the browser integration.
+For each later version, repeat the upload steps above; every upload opens a new
+review page, and the previous version is marked rejected once the newer one is
+reviewed. Monitor the account's review email and respond to reviewer requests
+before uploading a replacement. A screenshot of the actual extension with
+harmless message content is still worth adding to the listing.
 
 The site's **Incompatible** label appears when its compatibility selector cannot
-find an installable version for the detected Shell. An unreviewed first release
-has no approved build available, so the label alone does not establish a runtime
-incompatibility. The owner has since reported GNOME Shell 48.7, which matches
+find an installable version for the detected Shell. Before approval no build was
+available, so the label alone did not establish a runtime incompatibility. The owner has since reported GNOME Shell 48.7, which matches
 the submitted `48` entry; no `48.7` metadata entry is needed. The browser's
 detected version and the latest account-only review status remain unchecked. See the
 [website's compatibility logic](https://extensions.gnome.org/static/js/extensions.aff5cff579c3.js)

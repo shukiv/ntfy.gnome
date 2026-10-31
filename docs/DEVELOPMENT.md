@@ -10,11 +10,13 @@ GTK process; GSettings is the communication boundary.
 
 | File | Responsibility |
 | --- | --- |
-| `extension.js` | Panel, notifications, recent messages, clients and lifecycle cleanup |
+| `extension.js` | Panel, notifications, per-topic messages, clients and lifecycle cleanup |
 | `prefs.js` | Subscription controls and desktop notification settings |
 | `lib/config.js` | Validate subscriptions, canonicalize origins, validate browser links |
 | `lib/protocol.js` | Frame JSON lines, normalize messages, bound input and deduplicate IDs |
 | `lib/client.js` | Connection lifecycle, replay checkpoint and retry scheduling |
+| `lib/replay.js` | Validate and serialize saved replay checkpoints |
+| `lib/timeouts.js` | Registry of main-loop timeouts; `disable()` clears it in one call |
 | `lib/transport.js` | Real Soup 3/Gio streaming requests and GLib timers |
 | `lib/auth.js` | Token validation and cancellation across keyring lookup and network start |
 | `lib/secrets.js` | Asynchronous Secret Service storage and lookup |
@@ -79,8 +81,9 @@ Tests use synthetic credentials and local fixtures. They do not use the desktop
 user's existing keyring or publish to public ntfy topics.
 
 The history regression harness executes the real extension class with a small
-menu/clock host double. It verifies that expanding Recent messages exposes the
-body, preserves ordering and actions, and clears entries. It does not render St
+menu/clock host double. It verifies that expanding a subscription exposes only
+that topic's message bodies, preserves ordering and actions, keeps per-topic
+limits and counts, and clears entries. It does not render St
 actors or verify scrolling, keyboard behavior, themes, or text allocation.
 Those checks remain in the [desktop acceptance list](TESTING.md#desktop-acceptance--pending).
 
@@ -129,6 +132,7 @@ Path: `/org/gnome/shell/extensions/ntfy/`
 | `notifications-enabled` | `b` | `true` | Whether incoming messages create desktop notifications |
 | `server-credentials` | `a{ss}` | `{}` | Canonical server origin → opaque keyring item ID |
 | `credential-retry` | `(ss)` | `('', '')` | Server origin and unique request ID for explicit credential retries |
+| `replay-state` | `s` | `'{}'` | JSON object: `server/topic` → last handled message time and newest 20 message IDs; no message text or credentials. Written by the extension; resetting it only skips messages missed while stopped |
 
 A subscription value contains records such as:
 

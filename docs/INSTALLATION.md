@@ -119,7 +119,7 @@ gnome-extensions info ntfy@shukiv.github.io
 ```
 
 Close and reopen Preferences if it was open. Subscriptions and keyring tokens
-are retained; in-memory recent messages reset when Shell restarts.
+are retained; in-memory messages reset when Shell restarts.
 
 If `git pull --ff-only` reports local changes or diverged history, preserve your
 work before resolving it; recloning is not required for a normal update.

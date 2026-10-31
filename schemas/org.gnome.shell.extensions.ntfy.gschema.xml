@@ -16,6 +16,11 @@
       <summary>Topic subscriptions</summary>
       <description>JSON array of id, server, topic, and enabled records. Contains no credentials.</description>
     </key>
+    <key name="replay-state" type="s">
+      <default>'{}'</default>
+      <summary>Replay checkpoints</summary>
+      <description>JSON object mapping each subscribed server and topic to the time of its last handled message and recent message IDs, used to fetch messages missed while the extension was stopped. Contains no message text and no credentials.</description>
+    </key>
     <key name="notifications-enabled" type="b">
       <default>true</default>
       <summary>Show desktop notifications</summary>

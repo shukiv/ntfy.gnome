@@ -85,35 +85,42 @@ Create tokens in the server's web account or ask its administrator. Replacing
 or removing a local token does not revoke it on the server. ntfy describes
 [token creation and use](https://docs.ntfy.sh/publish/#access-tokens) in its manual.
 
-## Read recent messages
+## Read messages
 
-Open the panel's **Recent messages (N)** row. Each message shows its topic,
-optional title, message text, and local date/time directly in that list.
-There is no second message submenu. Text wraps, including multiline messages;
-scroll within the expanded history when the list is longer than the screen.
-The latest received message appears first.
+Messages are listed inside their own subscription. A row such as
+**jabali-backups (3) — Connected** has three retained messages; open it to read
+them below the server, status, and topic actions. Each message is one card
+with its local date/time, optional bold title, and message text.
+There is no second message submenu and no shared list across topics. Text
+wraps, including multiline messages; scroll within the expanded topic when the
+list is longer than the screen. The latest received message appears first.
 
 **Open link** appears when the publisher supplied an accepted HTTP(S) click
 link. **Open topic** opens the topic's web page. Neither action opens a browser
 until you select it. Your browser may need its own ntfy login; the extension
 does not pass its keyring token to the browser.
 
-The badge beside the ntfy logo in the top bar shows the same count as **Recent
-messages**: the number of retained messages across all subscriptions, up to 20.
-It appears after a message arrives and continues updating while desktop
-notifications are muted. Reading messages does not change the count.
-**Clear recent messages** empties the local list and hides the badge without
-deleting messages from the ntfy server or clearing GNOME's notification list.
+Each subscription retains its last 20 messages, so a busy topic cannot push
+out another topic's messages. The badge beside the ntfy logo in the top bar
+shows the total across all subscriptions. It appears after a message arrives
+and continues updating while desktop notifications are muted. Reading messages
+does not change the count. **Clear messages** inside a subscription empties
+that topic; **Clear all messages** empties every topic and hides the badge.
+Neither deletes messages from the ntfy server or clears GNOME's notification
+list. Removing a subscription, or changing its server or topic, discards its
+retained messages.
 
-The list takes a fresh snapshot each time you expand **Recent messages**. If a
-message arrives while you are reading, the count updates; collapse and reopen
-the row to refresh its contents without changing focus during an incoming burst.
+A topic takes a fresh snapshot each time you expand it. If a message arrives
+while you are reading, the counts update; collapse and reopen the row to refresh
+its contents without changing focus during an incoming burst.
 
-History clears when the extension is disabled, including during screen locking,
-logout, or Shell restart. A fresh enable starts receiving current messages with
-one second of overlap, rather than fetching the entire server cache. While the
-extension stays enabled, reconnecting can recover missed messages still retained
-by the server. History is not a persistent inbox.
+Message lists clear when the extension is disabled, including during screen
+locking, logout, or Shell restart. The extension remembers where each topic
+stopped, so the next start fetches messages published meanwhile and notifies
+you of them, as long as the server still retains them (12 hours by default on
+ntfy). Messages you already saw are not repeated. A new subscription, or one
+that was switched off, starts from the present instead of loading the server's
+cache. The lists are not a persistent inbox.
 
 ## Notifications and connection controls
 
@@ -125,7 +132,8 @@ by the server. History is not a persistent inbox.
 | **Reconnecting (Ns)** | A temporary failure occurred; another attempt is scheduled |
 | **Connected — older messages unavailable** | The server reported a truncated replay; some older messages may be missing |
 | **Disabled** | This subscription's switch is off in Preferences |
-| **Reconnect** | Retry all enabled subscriptions, including those stopped by an error |
+| *Error* — retrying in Ns | The server, keyring, or token rejected the attempt; the extension keeps retrying by itself |
+| **Reconnect** | Retry all enabled subscriptions at once instead of waiting |
 
 GNOME's **Do Not Disturb** setting is respected. ntfy priorities 1–2 use low
 notification urgency and go to the notification list without a banner.
@@ -147,7 +155,7 @@ curl --fail-with-body -H 'Title: GNOME subscription test' \
   https://ntfy.sh/YOUR_UNIQUE_TOPIC
 ```
 
-You should see the text in **Recent messages** and, if notifications are enabled
+You should see the text inside the topic's row and, if notifications are enabled
 and Do Not Disturb is off, a desktop banner. For private topics, publish through
 your existing authenticated ntfy app or integration with write permission.
 The extension itself only subscribes; it has no publishing form.
