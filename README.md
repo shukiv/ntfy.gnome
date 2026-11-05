@@ -4,6 +4,7 @@ A GNOME Shell extension that receives [ntfy](https://ntfy.sh) messages and
 shows native desktop notifications, with a panel menu that lists each
 subscription and its messages. Works with ntfy.sh and self-hosted servers.
 
+Version **0.4.1** adds GNOME 51 to the supported Shell versions.
 Version **0.4.0** shows messages inside each subscription and removes the
 shared Recent messages list. Version **0.3.2** fixes subscriptions that stayed **Connected** but stopped
 receiving after a dropped connection. Version **0.3.1** adds the ntfy panel logo
@@ -12,9 +13,11 @@ and a message-count badge. Download the
 or build from source below.
 
 Version **0.4.0** is [approved on GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
-as of 2026-10-31 and installs from that page. The extension targets **GNOME 46–50**;
-only GNOME Shell 48 on X11 has been exercised on a desktop, so the rest of the
-compatibility matrix remains unverified.
+as of 2026-10-31 and installs from that page; 0.4.1 is not yet uploaded. The
+extension targets **GNOME 46–51**. Only GNOME Shell 48 on X11 has been exercised
+on the maintainer's desktop, and a user reported GNOME Shell 51.1 on Wayland
+working in [issue #1](https://github.com/shukiv/ntfy.gnome/issues/1); the rest of the compatibility matrix remains
+unverified.
 
 ## Documentation
 

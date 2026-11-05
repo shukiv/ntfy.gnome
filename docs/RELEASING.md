@@ -4,7 +4,13 @@
 
 ## Current test build
 
-Version **0.4.0** (in `main`, not yet uploaded) lists messages inside each
+Version **0.4.1** (in `main`, not yet uploaded) adds `51` to `shell-version`.
+The code is unchanged from 0.4.0. None of the removals in the
+[GNOME 51 migration guide](https://gjs.guide/extensions/upgrading/gnome-shell-51.html)
+affect it, and a user reported 0.4.0 working on GNOME Shell 51.1 in
+[issue #1](https://github.com/shukiv/ntfy.gnome/issues/1).
+
+Version **0.4.0** (approved 2026-10-31) lists messages inside each
 subscription, with a per-topic count in the row label, a 20-message limit per
 topic, and **Clear messages** per topic. The shared Recent messages list is
 removed; **Clear all messages** replaces **Clear recent messages**. Every
@@ -63,14 +69,14 @@ documentation; the upload form is on extensions.gnome.org.
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
-| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.4.0 approved 2026-10-31; 0.3.2 was never uploaded |
+| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.4.0 approved 2026-10-31; 0.4.1 not yet uploaded; 0.3.2 was never uploaded |
 | UUID | `ntfy@shukiv.github.io` |
-| User-facing version | `0.4.0` in `version-name`, approved 2026-10-31; `0.3.1` (2026-09-08) and `0.3.0` (2026-09-07) are marked rejected |
+| User-facing version | `0.4.1` in `version-name`, not yet uploaded; `0.4.0` approved 2026-10-31; `0.3.1` (2026-09-08) and `0.3.0` (2026-09-07) are marked rejected |
 | Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
 | Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — 0.4.0 build SHA-256 `7564eb981f33e0f17e6e4a1594abf244d02c483d929e5cfbe827efcb6126e1b1`; the 0.3.1 upload had `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
-| Shell targets | 46–50 declared in the submission; desktop validation remains pending |
-| Reported test desktop | GNOME Shell 48.7, reported by the owner on 2026-09-08; matches the `48` entry |
+| Shell targets | 46–50 declared in the 0.4.0 submission; 0.4.1 adds 51; desktop validation remains pending |
+| Reported test desktop | GNOME Shell 48.7, reported by the owner on 2026-09-08; matches the `48` entry. GNOME Shell 51.1 on Wayland (Fedora 45), reported by a user in [issue #1](https://github.com/shukiv/ntfy.gnome/issues/1) on 2026-11-05; matches the `51` entry |
 
 The namespace follows the maintainer's GitHub account. GNOME treats the change
 from `ntfy@ntfy.gnome` as a new extension: follow the

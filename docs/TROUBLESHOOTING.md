@@ -64,7 +64,9 @@ topic's own row; the shared **Recent messages** row no longer exists.
 
 Run `gnome-extensions info ntfy@shukiv.github.io`. Check that it is enabled and that
 the GNOME **Extensions** app allows user extensions. Metadata currently targets
-GNOME 46–50; compatibility testing is still in progress.
+GNOME 46–51; compatibility testing is still in progress. After a Shell upgrade,
+GNOME refuses to load an extension whose metadata does not list the new major
+version; update the extension once a release adds it.
 
 For an error state, collect the Shell log while reproducing it:
 

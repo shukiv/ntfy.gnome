@@ -133,4 +133,4 @@ preferences. The metadata's Shell versions are provisional targets.
 | Open/close preferences repeatedly | No signal-handler warnings |
 | Keyboard, scaling, light/dark | Native focus behavior and readable controls |
 | Panel badge at normal/high DPI and light/dark styles | One- and two-digit counts remain readable and aligned; no clipped icon or badge |
-| GNOME 46 / 47 / 48 / 49 / 50 | Complete smoke pass before release support is claimed |
+| GNOME 46 / 47 / 48 / 49 / 50 / 51 | Complete smoke pass before release support is claimed |

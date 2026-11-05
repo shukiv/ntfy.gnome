@@ -35,7 +35,7 @@ palette, bundled fonts, or web UI is necessary.
    translations, packaging metadata and license notices, extension review.
 
 The first two slices are implemented, with further verification required before
-a public release. GNOME 46–50 is the provisional API target, pending the user's
+a public release. GNOME 46–51 is the provisional API target, pending the user's
 desktop version and runtime verification. GNOME 45 and older need a separate
 compatibility decision. The public submission uses `ntfy@shukiv.github.io`;
 the earlier `ntfy@ntfy.gnome` prototype requires a one-time installation migration.
@@ -165,6 +165,7 @@ light/dark themes. Run on each declared Shell version before claiming support.
 - [ntfy token authentication](https://docs.ntfy.sh/publish/#access-tokens).
 - [libsecret search and unlock flags](https://gnome.pages.gitlab.gnome.org/libsecret/method.Service.search.html).
 - [GNOME 50 migration](https://gjs.guide/extensions/upgrading/gnome-shell-50.html).
+- [GNOME 51 migration](https://gjs.guide/extensions/upgrading/gnome-shell-51.html).
 - Shell notification implementations inspected at upstream tags
   [46.0](https://github.com/GNOME/gnome-shell/blob/46.0/js/ui/messageTray.js) and
   [50.0](https://github.com/GNOME/gnome-shell/blob/50.0/js/ui/messageTray.js).

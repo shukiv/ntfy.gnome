@@ -9,7 +9,7 @@ and run the development checks, but cannot display the panel or notifications.
 
 | Purpose | Requirements |
 | --- | --- |
-| Run the extension | GNOME Shell 46–50 target; GJS, Soup 3, libsecret and a Secret Service provider such as GNOME Keyring |
+| Run the extension | GNOME Shell 46–51 target; GJS, Soup 3, libsecret and a Secret Service provider such as GNOME Keyring |
 | Open preferences | GTK 4 and libadwaita, including their GObject introspection bindings |
 | Build the archive | Python 3 and `glib-compile-schemas` |
 | Clone from GitHub | Git; GitHub CLI (`gh`) for the commands below |
