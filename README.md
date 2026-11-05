@@ -12,8 +12,8 @@ and a message-count badge. Download the
 [GitHub test build](https://github.com/shukiv/ntfy.gnome/releases/tag/v0.3.1-rc.1)
 or build from source below.
 
-Version **0.4.0** is [approved on GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
-as of 2026-10-31 and installs from that page; 0.4.1 is not yet uploaded. The
+Version **0.4.1** is [approved on GNOME Extensions](https://extensions.gnome.org/extension/10898/ntfy-for-gnome/)
+as of 2026-11-05 and installs from that page. The
 extension targets **GNOME 46–51**. Only GNOME Shell 48 on X11 has been exercised
 on the maintainer's desktop, and a user reported GNOME Shell 51.1 on Wayland
 working in [issue #1](https://github.com/shukiv/ntfy.gnome/issues/1); the rest of the compatibility matrix remains

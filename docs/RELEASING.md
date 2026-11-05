@@ -4,7 +4,7 @@
 
 ## Current test build
 
-Version **0.4.1** (in `main`, not yet uploaded) adds `51` to `shell-version`.
+Version **0.4.1** (approved 2026-11-05) adds `51` to `shell-version`.
 The code is unchanged from 0.4.0. None of the removals in the
 [GNOME 51 migration guide](https://gjs.guide/extensions/upgrading/gnome-shell-51.html)
 affect it, and a user reported 0.4.0 working on GNOME Shell 51.1 in
@@ -36,6 +36,13 @@ ZIP predates the lifecycle cleanup in `1609f0d`; the extensions.gnome.org upload
 was built from that commit.
 
 ## Submission status
+
+Version **0.4.1** was uploaded to extensions.gnome.org on 2026-11-05 from
+commit `27d6da9` (ZIP SHA-256 `09e2a3a5d1bf44508ddca834b4a80420d3346978af233953463ade9ed66dd89f`)
+and was **approved the same day** by JustPerfection with no comments (review
+page 77913). The listing now maps Shell 46–51 to 0.4.1; 0.4.0 also stays
+**Active**. The site's diff against 0.4.0
+changes only `metadata.json`, and Shexli reported no issues.
 
 Version **0.4.0** was uploaded to extensions.gnome.org on 2026-10-31 (ZIP
 SHA-256 `7564eb981f33e0f17e6e4a1594abf244d02c483d929e5cfbe827efcb6126e1b1`)
@@ -69,13 +76,13 @@ documentation; the upload form is on extensions.gnome.org.
 | Field | Prepared value |
 | --- | --- |
 | Name | ntfy for GNOME |
-| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.4.0 approved 2026-10-31; 0.4.1 not yet uploaded; 0.3.2 was never uploaded |
+| GNOME listing | `https://extensions.gnome.org/extension/10898/ntfy-for-gnome/` — 0.4.1 approved 2026-11-05 (review 77913); 0.4.0 approved 2026-10-31 and still Active; 0.3.2 was never uploaded |
 | UUID | `ntfy@shukiv.github.io` |
-| User-facing version | `0.4.1` in `version-name`, not yet uploaded; `0.4.0` approved 2026-10-31; `0.3.1` (2026-09-08) and `0.3.0` (2026-09-07) are marked rejected |
+| User-facing version | `0.4.1` in `version-name`, approved 2026-11-05; `0.4.0` approved 2026-10-31; `0.3.1` (2026-09-08) and `0.3.0` (2026-09-07) are marked rejected |
 | Homepage | `https://github.com/shukiv/ntfy.gnome` — publicly accessible |
 | License | GPL-3.0-only; selected by the owner |
-| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — 0.4.0 build SHA-256 `7564eb981f33e0f17e6e4a1594abf244d02c483d929e5cfbe827efcb6126e1b1`; the 0.3.1 upload had `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
-| Shell targets | 46–50 declared in the 0.4.0 submission; 0.4.1 adds 51; desktop validation remains pending |
+| Archive | `dist/ntfy@shukiv.github.io.shell-extension.zip` — 0.4.1 upload SHA-256 `09e2a3a5d1bf44508ddca834b4a80420d3346978af233953463ade9ed66dd89f`; the 0.4.0 upload had `7564eb981f33e0f17e6e4a1594abf244d02c483d929e5cfbe827efcb6126e1b1`; the 0.3.1 upload had `1349c4f7f12133b668fa69697bbdacfeec231f326ec2422d0067bd0c538b9f4e` |
+| Shell targets | 46–51 declared in the 0.4.1 submission (0.4.0 declared 46–50); desktop validation remains pending |
 | Reported test desktop | GNOME Shell 48.7, reported by the owner on 2026-09-08; matches the `48` entry. GNOME Shell 51.1 on Wayland (Fedora 45), reported by a user in [issue #1](https://github.com/shukiv/ntfy.gnome/issues/1) on 2026-11-05; matches the `51` entry |
 
 The namespace follows the maintainer's GitHub account. GNOME treats the change
@@ -169,10 +176,11 @@ uploads and account-only review actions need the owner's browser.
 
 ## After approval
 
-0.4.0 is approved, so the listing installs through the browser integration.
+0.4.1 is approved, so the listing installs through the browser integration.
 For each later version, repeat the upload steps above; every upload opens a new
-review page, and the previous version is marked rejected once the newer one is
-reviewed. Monitor the account's review email and respond to reviewer requests
+review page. An approved update does not reject the previous version: 0.4.0
+stayed **Active** after 0.4.1 was approved, and the listing maps each Shell
+version to the newest approved build. Monitor the account's review email and respond to reviewer requests
 before uploading a replacement. A screenshot of the actual extension with
 harmless message content is still worth adding to the listing.
 
