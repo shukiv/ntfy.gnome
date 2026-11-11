@@ -77,6 +77,7 @@ export default class NtfyExtension extends Extension {
         this._settingsSignals = [
             this._settings.connect('changed::subscriptions', () => this._syncSubscriptions()),
             this._settings.connect('changed::notifications-enabled', () => this._syncMute()),
+            this._settings.connect('changed::show-panel-icon', () => this._syncPanelIcon()),
             this._settings.connect('changed::server-credentials', () => this._syncSubscriptions()),
             this._settings.connect('changed::credential-retry', () => {
                 const [server] = this._settings.get_value('credential-retry').deep_unpack();
@@ -86,8 +87,13 @@ export default class NtfyExtension extends Extension {
                 }
             }),
         ];
+        this._syncPanelIcon();
         this._syncMute();
         this._syncSubscriptions();
+    }
+
+    _syncPanelIcon() {
+        this._indicator.visible = this._settings.get_boolean('show-panel-icon');
     }
 
     _syncMute() {

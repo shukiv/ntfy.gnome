@@ -26,5 +26,10 @@
       <summary>Show desktop notifications</summary>
       <description>When false, continue receiving messages and updating recent history without sending notifications.</description>
     </key>
+    <key name="show-panel-icon" type="b">
+      <default>true</default>
+      <summary>Show the ntfy panel icon</summary>
+      <description>When false, hide the top bar icon while continuing to receive messages.</description>
+    </key>
   </schema>
 </schemalist>
