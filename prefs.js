@@ -29,6 +29,15 @@ export default class NtfyPreferences extends ExtensionPreferences {
         notifications.add(showNotifications);
         page.add(notifications);
 
+        const panel = new Adw.PreferencesGroup({title: _('Panel')});
+        const showPanelIcon = new Adw.SwitchRow({
+            title: _('Show ntfy icon in the top bar'),
+            subtitle: _('Hide the panel icon while continuing to receive messages.'),
+        });
+        settings.bind('show-panel-icon', showPanelIcon, 'active', Gio.SettingsBindFlags.DEFAULT);
+        panel.add(showPanelIcon);
+        page.add(panel);
+
         const subscriptionsGroup = new Adw.PreferencesGroup({title: _('Subscriptions')});
         page.add(subscriptionsGroup);
         let rows = [];
