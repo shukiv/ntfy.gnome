@@ -142,6 +142,11 @@ The extension's mute switch does not remove notifications already delivered.
 The ntfy panel logo dims while muted; the badge remains readable and reception
 continues. The panel button's accessible name includes the mute state and count.
 
+**Preferences → Panel → Show ntfy icon in the top bar** hides the whole panel
+button. Messages and desktop notifications keep arriving, but the menu with the
+message lists, the mute switch and **Reconnect** is unreachable until the icon
+is shown again. Open Preferences from the Extensions app to turn it back on.
+
 For HTTP or keyring error states, use the [troubleshooting table](TROUBLESHOOTING.md#connection-and-token-errors).
 
 ## Send a test message

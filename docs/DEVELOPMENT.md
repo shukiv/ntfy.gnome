@@ -130,6 +130,7 @@ Path: `/org/gnome/shell/extensions/ntfy/`
 | --- | --- | --- | --- |
 | `subscriptions` | `s` | `'[]'` | JSON array of validated subscription records |
 | `notifications-enabled` | `b` | `true` | Whether incoming messages create desktop notifications |
+| `show-panel-icon` | `b` | `true` | Whether the ntfy button is shown in the top bar; messages and notifications continue while it is hidden |
 | `server-credentials` | `a{ss}` | `{}` | Canonical server origin → opaque keyring item ID |
 | `credential-retry` | `(ss)` | `('', '')` | Server origin and unique request ID for explicit credential retries |
 | `replay-state` | `s` | `'{}'` | JSON object: `server/topic` → last handled message time and newest 20 message IDs; no message text or credentials. Written by the extension; resetting it only skips messages missed while stopped |
